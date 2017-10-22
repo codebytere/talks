@@ -57,7 +57,7 @@ doA(function() {
 doB();
 ```
 
-So you can see I have two functions side by side, and your eyes have to do a significant amount of jumping around to discern the order in which the functions are executing. 
+So you can see I have two functions side by side, and your eyes have to do a significant amount of jumping around to discern the order in which the functions are executing. On the right side, i've mapped the letters to the order in which they run.
 
 ### How It Works
 
