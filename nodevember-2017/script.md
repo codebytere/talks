@@ -8,7 +8,7 @@ Shelley Vohr, a software engineer at GitHub working on open source. I help build
 
 Today, I want to do a deep dive into the mechanics of asynchronous programming in javascript. To make sure we're all on the same page before I really get started, I'll go over basic principles of async. Then, we'll launch into different methodologies and the nuances of what exactly differentiates them, and then finally we'll compare over the spectrum of option to discuss what approach is best.
 
-`<SWITCH TO SLIDE 2>`
+`<SWITCH SLIDE>`
 
 # Basic Async
 
@@ -24,7 +24,7 @@ To understand how code is executed, it's best to start with the event loop. The 
 
 Let's take a look at the JS call stack.
 
-`<SWITCH TO SLIDE 3>`
+`<SWITCH SLIDE>`
 
 When a function `foo()` calls a function `bar()`, `bar()` needs to know where to return to (inside `foo()`) after it is done. This information is managed with the call stack.
 
@@ -78,10 +78,10 @@ Next, each of the functions terminates and each time the top entry is removed fr
 
 We're going to use this as a template for understanding the asynchronous techniques i'm about to discuss, so let's also take a second and look at it visually.
 
-`<SWITCH TO SLIDE 4>`
+`<SWITCH SLIDE>`
 
 ## Callbacks
-### How It Works
+### How They Work
 
 When I talk about "response" code in the pre-ES6 era, what I really mean is callbacks. I'm sure most all of you are familiar with or have encountered callbacks, so i'm going to focus more on how they fit into the async landscape as a whole. Let's start by looking at the functions I have on the screen here, and talking about them in context.
 
@@ -109,7 +109,7 @@ doB()
 
 So you can see I have two functions side by side, and your eyes have to do a significant amount of jumping around to discern the order in which the functions are executing. On the right side, i've mapped the letters to the order in which they run. This should be a little more intuitive to look at.
 
-// TODO add more here
+// TODO ADD MORE HERE
 If you execute a long-running operation within a single-threaded event loop, the process "blocks".
 
 ### Errors
@@ -124,14 +124,36 @@ function doSomething (error, file) {
   // CONTINUE TO DO OTHER THINGS
 }
 ```
-However! There is a caveat to this advice, and it lies in how specifically the error are caught. Did you see how in the snippet i showed I _returned_ the error, and didn't throw it? That was intentional, because exceptions are only a synchronous mechanism, which is logical: in an asynchronous environment, the exception could be thrown when the handler block is already out of scope and thus meaningless.
+However! There is a caveat to this advice, and it lies in how specifically the error are caught. Did you see how in the snippet i showed I _returned_ the error, and didn't throw it? That was intentional, because exceptions are only a synchronous mechanism, which is logical: in an asynchronous environment, the exception could be thrown when the handler block is already out of scope and thus be rendered meaningless.
 
-`<SWITCH TO SLIDE 9>`
+`<SWITCH SLIDE>`
 
 ## Generators
-### How It Works
+### How They Work
 
-The first thing to observe as we talk about generators is how they differ from normal functions with respect to the "run to completion" expectation. With ES6 generators, we have a different kind of function, which may be paused in the middle, one or many times, and resumed later, allowing other code to run during these paused periods. They can be w
+The first thing to observe as we talk about generators is how they differ from normal functions with respect to the "run to completion" expectation. With ES6 generators, we have a different kind of function, which may be paused in the middle, one or many times, and resumed later, allowing other code to run during these paused periods.
+
+The main strength of generators is that they provide a single-threaded, synchronous-looking code style, while allowing you to hide the asynchronicity away as an implementation detail. This lets us express in a very natural way what the flow of our program's steps/statements is without simultaneously having to navigate asynchronous syntax and gotchas.
+
+
+```js
+function* counter() {
+  let index = 0
+  while(true) {
+    yield index++
+  }
+}
+
+const gen = counter()
+
+console.log(gen.next().value) // 0
+console.log(gen.next().value) // 1
+console.log(gen.next().value) // 2
+```
+
+The `yield index++` expression will send the `index` value out when pausing the generator function at that point, and whenever (if ever) the generator is restarted, whatever value is sent in will be the result of that expression, which will then get added to 1 and assigned to the `index` variable.
+
+`<SWITCH SLIDE>`
 
 ```js
 function* countDown(maxValue) {
@@ -161,22 +183,25 @@ counter.value // 26
 counter.next().value // 25
 ```
 
-While in my example, counter.next().value will always evaluate to 25 no matter where it occurs and how often we repeat it, this is not the case with the JS generator – at one point it is 26, then 25, and it could really be any number.
+// TODO CLEAN THIS UP
 
-ES6 generator functions are "cooperative" in their concurrency behavior. Inside the generator function body, you use the new yield keyword to pause the function from inside itself. Nothing can pause a generator from the outside it pauses itself when it comes across a yield.
+While in my example, `counter.next().value` will always evaluate to 25 no matter where it occurs and how often we repeat it, this is not the case with the JS generator – at one point it is 26, then 25, and it could really be any number.
+
+ES6 generator functions are "cooperative" in their concurrency behavior. Inside the generator function body, you use the new `yield` keyword to pause the function from inside itself. Nothing can pause a generator from the outside it pauses itself when it comes across a `yield`.
+
+With normal functions, you get parameters at the beginning and a return value at the end. With generator functions, you send messages out with each `yield`, and you send messages back in with each restart.
 
 ### Errors
 
-Error Handling
 One of the most powerful parts of the ES6 generators design is that the semantics of the code inside a generator are synchronous, even if the external iteration control proceeds asynchronously.
 
-That's a fancy/complicated way of saying that you can use simple error handling techniques that you're probably very familiar with -- namely the try..catch mechanism.
+That's a fancy/complicated way of saying that you can use simple error handling techniques that you're probably very familiar with -- the `try...catch` mechanism.
 
 ```js
 function *foo() {
   try {
     const x = yield 3
-    console.log(`x: ${x}`) // may never get here!
+    console.log(`x: ${x}`)
   }
   catch (err) {
     console.log(`Error: ${err}`)
@@ -188,22 +213,27 @@ Even though the function will pause at the yield 3 expression, and may remain pa
 
 ```js
 const it = foo()
-const res = it.next() // { value:3, done:false }
-
-// instead of resuming normally with another `next(..)` call,
-// let's throw a wrench (an error) into the gears:
-it.throw( "Oops!" ); // Error: Oops!
+const res = it.next()
+it.throw("ERROR!")
 ```
 
 Generators have synchronous execution semantics, which means you can use the try..catch error handling mechanism across a yield statement. The generator iterator also has a throw(..) method to throw an error into the generator at its paused position, which can of course also be caught by a try..catch inside the generator.
 
-yield* allows you to delegate the iteration control from the current generator to another one. The result is that yield* acts as a pass-through in both directions, both for messages as well as errors.
-
-The main strength of generators is that they provide a single-threaded, synchronous-looking code style, while allowing you to hide the asynchronicity away as an implementation detail. This lets us express in a very natural way what the flow of our program's steps/statements is without simultaneously having to navigate asynchronous syntax and gotchas.
-
 ## Promises
-
 ### How It Works
+
+```js
+const prom = new Promise((resolve, reject) => {
+  console.log('a');
+  resolve('b');
+  console.log('c');
+})
+
+console.log('d')
+prom.then(ret => console.log(ret))
+setTimeout(() => console.log('e'), 0)
+console.log('f')
+```
 
 ### Errors
 
@@ -212,11 +242,11 @@ If exceptions are thrown inside the callbacks of then() and catch() then that’
 However, things are different if you start your async function by doing something synchronous:
 
 ```js
-function asyncFunc() {
-  doSomethingSync() // (A)
-  return doSomethingAsync()
+function asyncFunction() {
+  somethingSync()
+  return somethingAsync()
   .then(result => {
-    ···
+    // do some stuff
   })
 }
 ```
@@ -226,12 +256,12 @@ Solution 1: returning a rejected Promise
 You can catch exceptions and return them as rejected Promises:
 
 ```js
-function asyncFunc() {
+function asyncFunction() {
   try {
-    doSomethingSync()
-    return doSomethingAsync()
+    somethingSync()
+    return somethingAsync()
     .then(result => {
-      ···
+      // do some stuff
     })
   } catch (err) {
     return Promise.reject(err)
@@ -243,14 +273,14 @@ Solution 2: executing the sync code inside a callback
 You can also start a chain of then() method calls via Promise.resolve() and execute the synchronous code inside a callback:
 
 ```js
-function asyncFunc() {
+function asyncFunction() {
   return Promise.resolve()
   .then(() => {
-    doSomethingSync()
-    return doSomethingAsync()
+    somethingSync()
+    return somethingAsync()
   })
   .then(result => {
-    ···
+    // do some stuff
   })
 }
 ```
@@ -258,13 +288,13 @@ function asyncFunc() {
 An alternative is to start the Promise chain via the Promise constructor:
 
 ```js
-function asyncFunc() {
+function asyncFunction() {
   return new Promise((resolve, reject) => {
-    doSomethingSync()
-    resolve(doSomethingAsync())
+    somethingSync()
+    resolve(somethingAsync())
   })
   .then(result => {
-    ···
+    // do some stuff
   })
 }
 ```
@@ -275,12 +305,7 @@ This approach saves you a tick (the synchronous code is executed right away), bu
 
 ### How It Works
 
-Async/await is a new way to write asynchronous code. Previous options for asynchronous code are callbacks and promises.
-Async/await is actually built on top of promises. It cannot be used with plain callbacks or node callbacks.
-Async/await is, like promises, non blocking.
-Async/await makes asynchronous code look and behave a little more like synchronous code. This is where all its power lies.
-
-Any async function returns a promise implicitly, and the resolve value of the promise will be whatever you return from the function (which is the string "done" in our case).
+Async/await is a new way to write asynchronous code. Previous options for asynchronous code are callbacks and promises. Async/await is actually built on top of promises. It cannot be used with plain callbacks or node callbacks. Async/await is, like promises, non-blocking, and it makes asynchronous code look and behave a little more like synchronous code. This is where all its power lies. Any async function returns a promise implicitly, and the resolve value of the promise will be whatever you return from the function.
 
 ### Errors
 
