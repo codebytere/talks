@@ -14,11 +14,13 @@ Today, I want to do a deep dive into the mechanics of asynchronous programming i
 
 So, asynchronous programming. Let's say you have a little program written in a single file, `index.js`. It might all be in the same file, but it's made up of functions, and at any given time only one of these is going to be executing _now_. The rest will execute _later_, at some point in the future. That, there, is the crux of async: the relationship between now and later, and how you manage this relationship with your code. What is key here, however, and what causes some of the most difficulties for developers when they're just starting out, is that _later_ doesn't mean strictly and immediately after _now_. It could be at any point in the future, and you don't necessarily know when that will be.
 
+It's also important to mention that JavaScript has what's known as run-to-completion semantics: The current task is always finished before the next task is executed. That means that each task has complete control over all current state and doesn’t have to worry about concurrent modification.
+
 # The Current Landscape
 
 Now that we've covered the basics of asynchrony, let's move on to some of the technical underpinnings of how code is executed in the javascript environment.
 
-To understand how code is executed, it's best to start with the event loop. The event loop can best be conceptualized as an endlessly running. singly-threaded loop, where each iteration runs a small chunk of the code in the program currently being executed. If you wanted to run a chunk of code at a later time, that chunk would simply be added to a queue for the event loop, and when the time came that you desired it to execute it would be dequeued and executed. With ES6 came a new concept called the job queue, but we'll save that for a little late.
+To understand how code is executed, it's best to start with the event loop. The event loop can best be conceptualized as an endlessly running. singly-threaded loop, where each iteration runs a small chunk of the code in the program currently being executed. If you wanted to run a chunk of code at a later time, that chunk would simply be added to a queue for the event loop, and when the time came that you desired it to execute it would be dequeued and executed. With ES6 came a new concept called the job queue, but we'll save that for a little later.
 
 Let's take a look at the JS call stack.
 
@@ -30,15 +32,12 @@ When a function `foo()` calls a function `bar()`, `bar()` needs to know where to
 function baz(z) {
   console.log(new Error().stack)
 }
-
 function bar(y) {
   baz(y + 1)
 }
-
 function foo(x) {
   bar(x + 1)
 }
-
 foo(3)
 return
 ```
@@ -50,14 +49,14 @@ After `foo(3)` is called, the stack has one entry:
 1. location in global scope
 ```
 
-After `bar(x + 1)` is called, the stack has two entries:
+After `bar(x + 1)` is called, the stack has 2 entries:
 
 ```
 1. location in foo()
 2. location in global scope
 ```
 
-After `baz(y + 1) ` is called, the stack has three entries:
+After `baz(y + 1) ` is called, the stack has 3 entries:
 
 ```
 1. location in bar()
@@ -86,7 +85,7 @@ We're going to use this as a template for understanding the asynchronous techniq
 
 When I talk about "response" code in the pre-ES6 era, what I really mean is callbacks. I'm sure most all of you are familiar with or have encountered callbacks, so i'm going to focus more on how they fit into the async landscape as a whole. Let's start by looking at the functions I have on the screen here, and talking about them in context.
 
-```javascript
+```js
 doA(() => {
   doB()
   doC(() => {
@@ -110,37 +109,24 @@ doB()
 
 So you can see I have two functions side by side, and your eyes have to do a significant amount of jumping around to discern the order in which the functions are executing. On the right side, i've mapped the letters to the order in which they run. This should be a little more intuitive to look at.
 
-JavaScript has what's known as run-to-completion semantics: The current task is always finished before the next task is executed. That means that each task has complete control over all current state and doesn’t have to worry about concurrent modification.
-
-Let’s look at an example:
-
-```js
-setTimeout(() => { // (A)
-  console.log('Second')
-}, 0)
-console.log('First') // (B)
-```
-
-The function starting in line A is added to the task queue immediately, but only executed after the current piece of code is done (in particular line B!). That means that this code’s output will always be:
-
-First
-Second
+// TODO add more here
+If you execute a long-running operation within a single-threaded event loop, the process "blocks".
 
 ### Errors
 
-In the previous code snippet I had up, you could see that your eyes had to skip around, even though they most likely wanted to read the code in a top down fashion. This is because your brain operates _sequentially_, which places it at odds with the inherent functionality of callbacks. When you sometimes struggle to understand how and when each part of code is working, it's undoubtedly hard to deal with errors in that code. There are now two ways in which errors are reported – via callbacks and via exceptions. You have to be careful to combine both properly. The most obvious, but occasionally overlooked aspect of dealing with errors in callbacks is to make sure you've actually handled all of them! Having the first argument be the error is a simple convention that encourages you to remember to handle your errors.
+In the previous code snippet I had up, you could see that your eyes had to skip around, even though they most likely wanted to read the code in a top down fashion. This is because your brain operates _sequentially_, which places it at odds with the inherent functionality of callbacks. When you sometimes struggle to understand how and when each part of code is working, it's undoubtedly hard to deal with errors in that code. Within the callback landscape, there are two ways in which errors are reported – via callbacks and via exceptions. You have to be careful to combine both properly. The most obvious, but occasionally overlooked aspect of dealing with errors in callbacks is to make sure you've actually handled all of them!
 
 ```js
 function doSomething (error, file) {
   if (error) {
-    return console.error('error oh no!', error)
+    return console.error(`oh no, error: ${error}`)
   }
   // CONTINUE TO DO OTHER THINGS
 }
 ```
 However! There is a caveat to this advice, and it lies in how specifically the error are caught. Did you see how in the snippet i showed I _returned_ the error, and didn't throw it? That was intentional, because exceptions are only a synchronous mechanism, which is logical: in an asynchronous environment, the exception could be thrown when the handler block is already out of scope and thus meaningless.
 
-
+`<SWITCH TO SLIDE 9>`
 
 ## Generators
 ### How It Works
@@ -148,9 +134,9 @@ However! There is a caveat to this advice, and it lies in how specifically the e
 The first thing to observe as we talk about generators is how they differ from normal functions with respect to the "run to completion" expectation. With ES6 generators, we have a different kind of function, which may be paused in the middle, one or many times, and resumed later, allowing other code to run during these paused periods. They can be w
 
 ```js
-function * countDown(maxValue) {
+function* countDown(maxValue) {
   yield max
-  yield * countDown(max > 0 ? max - 1 : 0)
+  yield* countDown(max > 0 ? max - 1 : 0)
 }
 
 let counter = countDown(26)
@@ -158,13 +144,15 @@ counter.next().value // 26
 counter.next().value // 25
 ```
 
-rewritten in callback form
+rewritten in callback form:
 
 ```js
 function downCounter(maxValue) {
   return {
     value: maxValue,
-    next: () => downCounter(maxValue > 0 ? maxValue - 1 : 0)
+    next: () => {
+      downCounter(maxValue > 0 ? maxValue - 1 : 0)
+    }
   }
 }
 
