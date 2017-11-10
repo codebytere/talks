@@ -124,6 +124,16 @@ function doSomething (error, file) {
   // CONTINUE TO DO OTHER THINGS
 }
 ```
+
+```js
+function doSomething (error, file) {
+  if (error) {
+    throw new Error(`oh no, error: ${error}`)
+  }
+  // CONTINUE TO DO OTHER THINGS
+}
+```
+
 However! There is a caveat to this advice, and it lies in how specifically the error are caught. Did you see how in the snippet i showed I _returned_ the error, and didn't throw it? That was intentional, because exceptions are only a synchronous mechanism, which is logical: in an asynchronous environment, the exception could be thrown when the handler block is already out of scope and thus be rendered meaningless.
 
 `<SWITCH SLIDE>`
@@ -307,12 +317,22 @@ This approach saves you a tick (the synchronous code is executed right away), bu
 
 Async/await is a new way to write asynchronous code. Previous options for asynchronous code are callbacks and promises. Async/await is actually built on top of promises. It cannot be used with plain callbacks or node callbacks. Async/await is, like promises, non-blocking, and it makes asynchronous code look and behave a little more like synchronous code. This is where all its power lies. Any async function returns a promise implicitly, and the resolve value of the promise will be whatever you return from the function.
 
+```js
+async function getABC() {
+  const A = await getValueA()
+  const B = await getValueB()
+  const C = await getValueC()
+
+  return A*B*C
+}
+```
+
 ### Errors
 
 If you’re familiar with promises you know that if a promise is rejected you’ll need to handle that error inside a `.catch`, and if you’re handling errors for both synchronous and asynchronous code you will likely have to duplicate your error handler.
 
 ```js
-const associateUsers = () => {
+const asyncFunction = () => {
   try {
    doSynchronousThings()
    return getUsers()
@@ -324,11 +344,11 @@ const associateUsers = () => {
 }
 ```
 
-In the above snippet we can see that there is duplicate code on lines 6 and 8. The catch statement on line 7 will handle any errors that the synchronous function doSynchronousThings may throw but it won’t handle any errors thrown by getUsers since it is asynchronous. This example may seem palatable since all its doing is printing the error to the console, but if there is any kind of complex error handling logic we want to avoid duplicating it. Async / await lets us do exactly that:
+In the above snippet we can see that there is duplicate code on lines 6 and 8. The catch statement on line 7 will handle any errors that the synchronous function `doSynchronousThings` may throw but it won’t handle any errors thrown by getUsers since it is asynchronous. This example may seem palatable since all its doing is printing the error to the console, but if there is any kind of complex error handling logic we want to avoid duplicating it. Async / await lets us do exactly that:
 
 
 ```js
-const associateUsers = async () => {
+const asyncFunction = async () => {
   try {
    doSynchronousThings()
    const users = await getUsers()
@@ -342,7 +362,7 @@ const associateUsers = async () => {
 One of the goals of async/await is to make asynchronous code appear more syntactically similar to synchronous code. This is also true for error handling.
 
 ```js
-const makeRequest = async () => {
+const asyncFunction = async () => {
   try {
     const data = JSON.parse(await getJSON())
     console.log(data)
@@ -352,51 +372,7 @@ const makeRequest = async () => {
 }
 ```
 
-Async/await makes it finally possible to handle both synchronous and asynchronous errors with the same construct, good old try/catch. In the example below with promises, the try/catch will not handle if JSON.parse fails because it’s happening inside a promise. We need to call .catch on the promise and duplicate our error handling code, which will (hopefully) be more sophisticated than console.log in your production ready code.
-
-# Debugging Async Code
-
-```js
-const makeRequest = () => {
-  return firstPromise()
-    .then(() => secondPromise())
-    .then(() => thirdPromise())
-    .then(() => fourthPromise())
-    .then(() => { throw new Error("oops") })
-}
-
-makeRequest()
-  .catch(error => {
-    console.log(error)
-    // output
-    // Error: oops at callAPromise.then.then.then.then.then (index.js:8:13)
-  })
-```
-Async/Await
-
-2. If you set a breakpoint inside a .then block and use debug shortcuts like step-over, the debugger will not move to the the following .then because it only “steps” through synchronous code.
-With async/await you don’t need arrow functions as much, and you can step through await calls exactly as if they were normal synchronous calls.
-
-```js
-const makeRequest = () => {
-  return firstPromise()
-  .then(() => secondPromise())
-  .then(() => thirdPromise())
-  .then(() => fourthPromise())
-}
-```
-
-Last but not least, a killer advantage when using async/await is that it’s much easier to debug. Debugging promises has always been such a pain for 2 reasons
-You can’t set breakpoints in arrow functions that return expressions (no body).
-
-```js
-const makeRequest = async () => {
-  await firstPromise()
-  await secondPromise()
-  await thirdPromise()
-  await fourthPromise()
-}
-```
+Async/await makes it finally possible to handle both synchronous and asynchronous errors with the same construct, good old `try...catch`. In the example below with promises, the try/catch will not handle if `JSON.parse` fails because it’s happening inside a promise. We need to call .catch on the promise and duplicate our error handling code, which will (hopefully) be more sophisticated than console.log in your production ready code.
 
 # Comparing Async Approaches
 
