@@ -1,22 +1,14 @@
-# Intro
+## Slide 1
 
-## Who Am I?
-
-Shelley Vohr, a software engineer at GitHub working on open source. I help build and maintain Electron, which is a javascript framework that allows you to use web technologies to build cross-platform native desktop apps.
-
-## Why Am I Here?
+I'm Shelley Vohr, a software engineer at GitHub working on open source. I help build and maintain Electron, which is a javascript framework that allows you to use web technologies to build cross-platform native desktop apps.
 
 Today, I want to do a deep dive into the mechanics of asynchronous programming in javascript. To make sure we're all on the same page before I really get started, I'll go over basic principles of async. Then, we'll launch into different methodologies and the nuances of what exactly differentiates them, and then finally we'll compare over the spectrum of option to discuss what approach is best.
 
-`<SWITCH SLIDE>`
-
-# Basic Async
+## SLIDE 2
 
 So, asynchronous programming. Let's say you have a little program written in a single file, `index.js`. It might all be in the same file, but it's made up of functions, and at any given time only one of these is going to be executing _now_. The rest will execute _later_, at some point in the future. That, there, is the crux of async: the relationship between now and later, and how you manage this relationship with your code. What is key here, however, and what causes some of the most difficulties for developers when they're just starting out, is that _later_ doesn't mean strictly and immediately after _now_. It could be at any point in the future, and you don't necessarily know when that will be.
 
-It's also important to mention that JavaScript has what's known as run-to-completion semantics: The current task is always finished before the next task is executed. That means that each task has complete control over all current state and doesn’t have to worry about concurrent modification.
-
-# The Current Landscape
+It's also important to mention that JavaScript has what's known as run-to-completion semantics: this means that the current task always finishes before the next task begins. As a result of this, each task has complete control over all current state and doesn’t have to worry about concurrent modification, or another task modifying things at the same time.
 
 Now that we've covered the basics of asynchrony, let's move on to some of the technical underpinnings of how code is executed in the javascript environment.
 
@@ -24,121 +16,123 @@ To understand how code is executed, it's best to start with the event loop. The 
 
 Let's take a look at the JS call stack.
 
-`<SWITCH SLIDE>`
+## SLIDE 3
 
-When a function `foo()` calls a function `bar()`, `bar()` needs to know where to return to (inside `foo()`) after it is done. This information is managed with the call stack.
+When a function `foo()` calls a function `bar()`, `bar()` needs to know where to return to inside `foo()` after it is done. This information is managed with the call stack. Take a look at the set  of three functions on the lefthand side of the slide, and let’s walk through how this stack will look as the program executes.
 
-```js
-function baz(z) {
-  console.log(new Error().stack)
-}
-function bar(y) {
-  baz(y + 1)
-}
-function foo(x) {
-  bar(x + 1)
-}
-foo(3)
-return
-```
-
-Initially, when the program above is started, the call stack is empty.
-After `foo(3)` is called, the stack has one entry:
-
-```
-1. location in global scope
-```
-
-After `bar(x + 1)` is called, the stack has 2 entries:
-
-```
-1. location in foo()
-2. location in global scope
-```
-
-After `baz(y + 1) ` is called, the stack has 3 entries:
-
-```
-1. location in bar()
-2. location in foo()
-3. location in global scope
-```
-
-When `console.log` is called in `baz()`, we see the call stack:
-
-```js
-Error
-    at baz (stack_trace.js:2:17)
-    at bar (stack_trace.js:6:5)
-    at foo (stack_trace.js:9:5)
-    at <global> (stack_trace.js:11:1)
-```
-
-Next, each of the functions terminates and each time the top entry is removed from the stack. After function `foo()` is done, we are back in global scope and the call stack is empty. In the last time we return and the stack is empty, which means that the program terminates.
+Initially, when the program above is started, the call stack is empty. After `foo(3)` is called, the stack has one entry: its entry in global scope, so that `foo(3)` knows where to return to when it is finished.  Next, after `bar(x + 1)` is called, the stack has 2 entries; it’s now stored the location that `bar(x + 1)` needs to return to when it’s finished executing, in addition to global scope. This trend continues as `baz(y + 1)`  is called, and the stack now contains `baz()`’s return address as well as the previous three return addresses from previous function calls. When `console.log()` is called in `baz()` we see the call stack, you’ll see it’s identical in the log to what I sketched out on the right side.  Next, each of the functions terminates and each time the top entry is removed from the stack. After function `foo(3)` is done, we are back in global scope and the call stack is empty. At the end of this program we return and the stack is empty, which means that the program terminates.
 
 We're going to use this as a template for understanding the asynchronous techniques i'm about to discuss, so let's also take a second and look at it visually.
 
-`<SWITCH SLIDE>`
+## Slide 4
 
-## Callbacks
-### How They Work
+In looking at this, you can see a handful of the things i've previously mentioned: the event loop, the task queue, and the stack. The current task comes off the event queue, and its location is stored in memory while relevant variables populate the heap. The task queue is populated by task sources, which would be a particular chunk of code in an executing program.
 
-When I talk about "response" code in the pre-ES6 era, what I really mean is callbacks. I'm sure most all of you are familiar with or have encountered callbacks, so i'm going to focus more on how they fit into the async landscape as a whole. Let's start by looking at the functions I have on the screen here, and talking about them in context.
+This snapshot would represent the moment after all functions in the previous slide had executed and before locations had begin to pop off the stack.
 
-```js
-doA(() => {
-  doB()
-  doC(() => {
-    doD()
-  })
-  doE()
-})
-doF()
-```
+## Slide 5
 
-```js
-doA(() => {
-  doC()
-  doD(() => {
-    doF()
-  })
-  doE()
-})
-doB()
-```
+I'm sure most all of you are familiar with or have encountered callbacks, so i'm going to focus more on how they fit into the async landscape as a whole. Let's start by looking at some functions, and talking about them in context.
 
-So you can see I have two functions side by side, and your eyes have to do a significant amount of jumping around to discern the order in which the functions are executing. On the right side, i've mapped the letters to the order in which they run. This should be a little more intuitive to look at.
+## Slide 6
 
-// TODO ADD MORE HERE
-If you execute a long-running operation within a single-threaded event loop, the process "blocks".
+Here, you can see I have two programs side by side. On the left, the function names are alphabetical from the top down, and on the right side, I've mapped the letters to the order in which they run. Most likely, your eyes have to do a significant amount of jumping around to discern the order in which the functions are executing for the program on the left, since they don't run in top-down sequential order you expect. By following letters on the right you probably had an easier time, so let's talk about why that is and how this looks on the call stack. Firstly, you had difficulty because your brain operates _sequentially_, which places it at odds with the inherent functionality of callbacks. At a more high level, this is part of why some of the later innovations in asynchrony have been welcomed; it's easier and debug code that you understand more intuitively.
 
-### Errors
+// CALL STACK SHIT
 
-In the previous code snippet I had up, you could see that your eyes had to skip around, even though they most likely wanted to read the code in a top down fashion. This is because your brain operates _sequentially_, which places it at odds with the inherent functionality of callbacks. When you sometimes struggle to understand how and when each part of code is working, it's undoubtedly hard to deal with errors in that code. Within the callback landscape, there are two ways in which errors are reported – via callbacks and via exceptions. You have to be careful to combine both properly. The most obvious, but occasionally overlooked aspect of dealing with errors in callbacks is to make sure you've actually handled all of them!
+### Slide 7
 
-```js
-function doSomething (error, file) {
-  if (error) {
-    return console.error(`oh no, error: ${error}`)
-  }
-  // CONTINUE TO DO OTHER THINGS
-}
-```
-
-```js
-function doSomething (error, file) {
-  if (error) {
-    throw new Error(`oh no, error: ${error}`)
-  }
-  // CONTINUE TO DO OTHER THINGS
-}
-```
+A few minutes ago, I talked about how you probably had a more difficult time reading the program on the left of the previous slide.  When you struggle to understand how and when each part of code is working, it's undoubtedly hard to deal with errors in that code. Within the callback landscape, there are two ways in which errors are reported – via callbacks and via exceptions. You have to be careful to combine both properly. The most obvious, but occasionally overlooked aspect of dealing with errors in callbacks is to make sure you've actually handled all of them!
 
 However! There is a caveat to this advice, and it lies in how specifically the error are caught. Did you see how in the snippet i showed I _returned_ the error, and didn't throw it? That was intentional, because exceptions are only a synchronous mechanism, which is logical: in an asynchronous environment, the exception could be thrown when the handler block is already out of scope and thus be rendered meaningless.
 
-`<SWITCH SLIDE>`
+## Slide 8
 
-## Generators
+The next big innovation in asynchrony, Promises,  hit Javascript with ES6. Before this, there was no direct notion of asynchrony built into the Javascript engine. All it ever did was execute a single chunk of your program at any given moment, when asked to. You, the developer, _asked it to_  by means of callbacks or timeouts, in order to shuffle its place in the event loop. With promises came a change to the JS engine, which took the form of the queue I mentioned very briefly a little while ago: the microtask queue. 
+
+## Promises
+### How It Works
+
+```js
+const prom = new Promise((resolve, reject) => {
+  console.log('a');
+  resolve('b');
+  console.log('c');
+})
+
+console.log('d')
+prom.then(ret => console.log(ret))
+setTimeout(() => console.log('e'), 0)
+console.log('f')
+```
+
+### Errors
+
+If exceptions are thrown inside the callbacks of then() and catch() then that’s not a problem, because these two methods convert them to rejections.
+
+However, things are different if you start your async function by doing something synchronous:
+
+```js
+function asyncFunction() {
+  somethingSync()
+  return somethingAsync()
+  .then(result => {
+    // do some stuff
+  })
+}
+```
+If an exception is thrown in line A then the whole function throws an exception. There are two solutions to this problem.
+
+Solution 1: returning a rejected Promise
+You can catch exceptions and return them as rejected Promises:
+
+```js
+function asyncFunction() {
+  try {
+    somethingSync()
+    return somethingAsync()
+    .then(result => {
+      // do some stuff
+    })
+  } catch (err) {
+    return Promise.reject(err)
+  }
+}
+```
+
+Solution 2: executing the sync code inside a callback
+You can also start a chain of then() method calls via Promise.resolve() and execute the synchronous code inside a callback:
+
+```js
+function asyncFunction() {
+  return Promise.resolve()
+  .then(() => {
+    somethingSync()
+    return somethingAsync()
+  })
+  .then(result => {
+    // do some stuff
+  })
+}
+```
+
+An alternative is to start the Promise chain via the Promise constructor:
+
+```js
+function asyncFunction() {
+  return new Promise((resolve, reject) => {
+    somethingSync()
+    resolve(somethingAsync())
+  })
+  .then(result => {
+    // do some stuff
+  })
+}
+```
+
+This approach saves you a tick (the synchronous code is executed right away), but it makes your code less regular.
+
+#Generators
 ### How They Work
 
 The first thing to observe as we talk about generators is how they differ from normal functions with respect to the "run to completion" expectation. With ES6 generators, we have a different kind of function, which may be paused in the middle, one or many times, and resumed later, allowing other code to run during these paused periods.
@@ -229,87 +223,6 @@ it.throw("ERROR!")
 
 Generators have synchronous execution semantics, which means you can use the try..catch error handling mechanism across a yield statement. The generator iterator also has a throw(..) method to throw an error into the generator at its paused position, which can of course also be caught by a try..catch inside the generator.
 
-## Promises
-### How It Works
-
-```js
-const prom = new Promise((resolve, reject) => {
-  console.log('a');
-  resolve('b');
-  console.log('c');
-})
-
-console.log('d')
-prom.then(ret => console.log(ret))
-setTimeout(() => console.log('e'), 0)
-console.log('f')
-```
-
-### Errors
-
-If exceptions are thrown inside the callbacks of then() and catch() then that’s not a problem, because these two methods convert them to rejections.
-
-However, things are different if you start your async function by doing something synchronous:
-
-```js
-function asyncFunction() {
-  somethingSync()
-  return somethingAsync()
-  .then(result => {
-    // do some stuff
-  })
-}
-```
-If an exception is thrown in line A then the whole function throws an exception. There are two solutions to this problem.
-
-Solution 1: returning a rejected Promise
-You can catch exceptions and return them as rejected Promises:
-
-```js
-function asyncFunction() {
-  try {
-    somethingSync()
-    return somethingAsync()
-    .then(result => {
-      // do some stuff
-    })
-  } catch (err) {
-    return Promise.reject(err)
-  }
-}
-```
-
-Solution 2: executing the sync code inside a callback
-You can also start a chain of then() method calls via Promise.resolve() and execute the synchronous code inside a callback:
-
-```js
-function asyncFunction() {
-  return Promise.resolve()
-  .then(() => {
-    somethingSync()
-    return somethingAsync()
-  })
-  .then(result => {
-    // do some stuff
-  })
-}
-```
-
-An alternative is to start the Promise chain via the Promise constructor:
-
-```js
-function asyncFunction() {
-  return new Promise((resolve, reject) => {
-    somethingSync()
-    resolve(somethingAsync())
-  })
-  .then(result => {
-    // do some stuff
-  })
-}
-```
-
-This approach saves you a tick (the synchronous code is executed right away), but it makes your code less regular.
 
 ## Async/Await
 
