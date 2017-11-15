@@ -48,27 +48,26 @@ However! There is a caveat to this advice, and it lies in how specifically the e
 
 ## Slide 8
 
-The next big innovation in asynchrony, Promises,  hit Javascript with ES6. Before this, there was no direct notion of asynchrony built into the Javascript engine. All it ever did was execute a single chunk of your program at any given moment, when asked to. You, the developer, _asked it to_  by means of callbacks or timeouts, in order to shuffle its place in the event loop. With promises came a change to the JS engine, which took the form of the queue I mentioned very briefly a little while ago: the microtask queue. 
+The next big innovation in asynchrony, Promises,  hit javascript with ES6. Before this, there was no direct notion of asynchrony built into the javascript engine. All it ever did was execute a single chunk of your program at any given moment, when asked to. You, the developer, _asked it to_  by means of callbacks or timeouts, in order to shuffle its place in the event loop. With promises came a change to the JS engine, which took the form of the queue I mentioned very briefly a little while ago: the microtask queue. Before I delve into how exactly this changes the form of the stack/queue/event-loop diagram I showed you earlier, let's look at an example of a program utilizing promises.
 
-## Promises
-### How It Works
+## Slide 9
 
-```js
-const prom = new Promise((resolve, reject) => {
-  console.log('a');
-  resolve('b');
-  console.log('c');
-})
+At the top here we declare `prom`. This variable, a promise, is best described as representing a future value, like a placeholder. We can reason about it without necessarily knowing the outcome, making it functionally extemporaneous. When the future value is _resolved_, it might succeed or fail, and then at that point it's no longer a placeholder and becomes an immutable value.
 
-console.log('d')
-prom.then(ret => console.log(ret))
-setTimeout(() => console.log('e'), 0)
-console.log('f')
-```
+As you can see, `p1` is resolved not with an immediate value, but with another promise `p3` which is itself resolved with the value "B". The specified behavior is to unwrap `p3` into `p1`, but asynchronously. Therefore, `p1`'s callback(s) are behind `p2`'s callback(s) in the asynchronous microtask queue, which is the new asynchronous concept built directly into the JS engine with the advent of ES6. The output, here, would then be B A instead of A B as your might expect.
 
-### Errors
+## Slide 10
 
-If exceptions are thrown inside the callbacks of then() and catch() then that’s not a problem, because these two methods convert them to rejections.
+This diagram looks nearly identical to the diagram I showed before, with one key difference: the addition of the microtask queue.  Once a promise settles, or if it has already settled, it queues a microtask for its reactionary callbacks. This ensures promise callbacks are async even if the promise has already settled. So calling `.then(resolve, reject)` against a settled promise immediately queues a microtask. Any additional microtasks queued during microtasks are added to the end of the queue and also processed.
+
+So, in looking at the diagram, you'll see that the current task can come off either the task queue or the microtask queue. All promise callbacks are queued as microtasks, so if we jump to the previous slide for a moment, the callbacks for `p1` and `p2`, where `val` is printed to the console, would both have been added to the microtask queue instead of the task queue.
+
+## Slide 11
+
+What happens if something dies or goes wrong in a promise? How do we deal with those errors? The standard way to handle errors from promises is to add a `catch()` handler at the end of your promise chain. You can also chain these handlers, so that you can throw errors into higher-level scopes. Catching and re-throwing errors in this way will tell you which higher-level module lead to the error which means that you can later debug the issue on a top-down or layer-by-layer basis.
+
+
+If exceptions are thrown inside the callbacks of `then()` and `catch()` then that’s not a problem, because these two methods convert them to rejections.
 
 However, things are different if you start your async function by doing something synchronous:
 
@@ -132,32 +131,21 @@ function asyncFunction() {
 
 This approach saves you a tick (the synchronous code is executed right away), but it makes your code less regular.
 
-#Generators
-### How They Work
+## Slide 12
 
 The first thing to observe as we talk about generators is how they differ from normal functions with respect to the "run to completion" expectation. With ES6 generators, we have a different kind of function, which may be paused in the middle, one or many times, and resumed later, allowing other code to run during these paused periods.
 
 The main strength of generators is that they provide a single-threaded, synchronous-looking code style, while allowing you to hide the asynchronicity away as an implementation detail. This lets us express in a very natural way what the flow of our program's steps/statements is without simultaneously having to navigate asynchronous syntax and gotchas.
 
-
-```js
-function* counter() {
-  let index = 0
-  while(true) {
-    yield index++
-  }
-}
-
-const gen = counter()
-
-console.log(gen.next().value) // 0
-console.log(gen.next().value) // 1
-console.log(gen.next().value) // 2
-```
+## Slide 13
 
 The `yield index++` expression will send the `index` value out when pausing the generator function at that point, and whenever (if ever) the generator is restarted, whatever value is sent in will be the result of that expression, which will then get added to 1 and assigned to the `index` variable.
 
-`<SWITCH SLIDE>`
+## Slide 14
+
+DIAGRAM
+
+## Slide 15
 
 ```js
 function* countDown(maxValue) {
@@ -195,7 +183,7 @@ ES6 generator functions are "cooperative" in their concurrency behavior. Inside 
 
 With normal functions, you get parameters at the beginning and a return value at the end. With generator functions, you send messages out with each `yield`, and you send messages back in with each restart.
 
-### Errors
+## Slide 16
 
 One of the most powerful parts of the ES6 generators design is that the semantics of the code inside a generator are synchronous, even if the external iteration control proceeds asynchronously.
 
@@ -213,7 +201,7 @@ function *foo() {
 }
 ```
 
-Even though the function will pause at the yield 3 expression, and may remain paused an arbitrary amount of time, if an error gets sent back to the generator, that try..catch will catch it! Try doing that with normal async capabilities like callbacks.
+Even though the function will pause at the yield 3 expression, and may remain paused an arbitrary amount of time, if an error gets sent back to the generator, that try..catch will catch it! With normal async capabilities like callbacks, that's essentially impossible to do.
 
 ```js
 const it = foo()
@@ -224,9 +212,7 @@ it.throw("ERROR!")
 Generators have synchronous execution semantics, which means you can use the try..catch error handling mechanism across a yield statement. The generator iterator also has a throw(..) method to throw an error into the generator at its paused position, which can of course also be caught by a try..catch inside the generator.
 
 
-## Async/Await
-
-### How It Works
+## Slide 17
 
 Async/await is a new way to write asynchronous code. Previous options for asynchronous code are callbacks and promises. Async/await is actually built on top of promises. It cannot be used with plain callbacks or node callbacks. Async/await is, like promises, non-blocking, and it makes asynchronous code look and behave a little more like synchronous code. This is where all its power lies. Any async function returns a promise implicitly, and the resolve value of the promise will be whatever you return from the function.
 
