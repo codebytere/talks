@@ -94,32 +94,25 @@ So, what does this look like from a stack perspective?
 
 ## Slide 15
 
- CALL STACK PERSPECTIVE
-
-## Slide 16
-
 One of the most powerful parts of the ES6 generators design is that the semantics of the code inside a generator are synchronous, even if the external iteration control proceeds asynchronously.
 
-That's a fancy/complicated way of saying that you can use simple error handling techniques that you're probably very familiar with -- the `try...catch` mechanism.
+That's a fancy way of saying that you can use simple error handling techniques that you're probably very familiar with -- the `try...catch` mechanism.
 
 Even though the function will pause at the yield 3 expression, and may remain paused an arbitrary amount of time, if an error gets sent back to the generator, that try..catch will catch it! With normal async capabilities like callbacks, that's essentially impossible to do.
 
 Generators have synchronous execution semantics, which means you can use the try..catch error handling mechanism across a yield statement. The generator iterator also has a throw(..) method to throw an error into the generator at its paused position, which can of course also be caught by a try..catch inside the generator.
 
+## Slide 16
+
+Async/await is a new way to write asynchronous code. Previous options for asynchronous code are callbacks and promises. Async/await was created to simplify the process of working with and writing chained promises, and so `async/await` functions return promises. They cannot be used with plain callbacks or node callbacks. Async/await is thus, like promises, non-blocking, and it makes asynchronous code look and behave a little more like synchronous code. This is where all its power lies. Since any `async/await` function returns a promise implicitly, and the resolve value of the promise will be whatever you return from the function.
+
+To illustrate, let's look at some code.
 
 ## Slide 17
 
-Async/await is a new way to write asynchronous code. Previous options for asynchronous code are callbacks and promises. Async/await was created to simplify the process of working with and writing chained promises, and so `async/await` functions return promises. They cannot be used with plain callbacks or node callbacks. Async/await is thus, like promises, non-blocking, and it makes asynchronous code look and behave a little more like synchronous code. This is where all its power lies. Since any `async/await` function returns a promise implicitly, and the resolve value of the promise will be whatever you return from the function. To illustrate, let's look at some code.
+Here, we're returning a string that contains several components of a street address. The function has the keyword async before it, and the await keyword can only be used inside functions defined with async. All four variables must be resolved before the function will return the desired string. Also important to note here is that if we did not use the `await` keyword before the address component functions, this function would not necessarily fail. It wuld just mean that the variables would be set to Promise objects instead of the values resolved from them.
 
-```js
-async function getABC() {
-  const A = await getValueA()
-  const B = await getValueB()
-  const C = await getValueC()
-
-  return A*B*C
-}
-```
+Under the hood, `async/await` works exactly the same as promises, utilizing the new microtask queue introduced in ES6 to handle async operations.
 
 ## Slide 18
 
@@ -137,30 +130,18 @@ Looking at the code here, you'll see two similar constructions, one with promise
 
 The promise error stack also somewhat misleading, in that the only function name it contains is `doSomething()` which doesn't really help in determining which call of that function caused the error. Conversely, the error stack from `async/await` points to the function that contains the error. When you’re trying to use error logs coming from some server to debug code, this is invaluable. In such cases, knowing the error happened in a specific call of `someFunction()` is significantly better than knowing that the error came from somewhere in a long line of `.then`'s.
 
-# Comparing Async Approaches
+# Slide 20
 
-## When Do I Want To Use Each?
+So, wrapping up!
 
-First, our brains plan things out in sequential, blocking, single-threaded semantic ways, but callbacks express asynchronous flow in a rather nonlinear, non-sequential way, which makes reasoning properly about such code much harder. Bad to reason about code is bad code that leads to bad bugs.
+# Slide 21
 
-Callbacks: lack of sequentiality and lack of trustability.
+Our brains plan things out in sequential, blocking, single-threaded semantic ways, but callbacks express asynchronous flow in a rather nonlinear, non-sequential way, which makes reasoning properly about such code much harder. Callbacks suffer from lack of sequentiality and lack of trustability, but they are good in situations where you may just be performing a simple request that's always asynchronous. They're just plain functions, so they also don't require any additional understanding beyond knowing how an asynchronous operation works. They also tend to be more verbose, so coordinating multiple asynchronous requests concurrently can lead to callback hell if you're not actively modularizing your functions. Dealing with errors also tends to be more confusing since there could be many Error objects that all go back to a single error further down the call stack.
 
-Callbacks tend to be more verbose and coordinating multiple asynchronous requests concurrently can lead to callback hell if you're not actively modularizing your functions. Error handling and tracing tends to be less straightforward and even confusing since there could be many Error objects that all go back to a single error further down the call stack. Errors, also need to be passed back to the original caller that can also lead to some head scratching when determining where the original Error was thrown if anonymous functions were used in the callback chain. One of the benefits of callbacks is that they are just plain old functions and don't require any additional understanding beyond knowing how an asynchronous operation works.
+Promises are easier to reason about, although they still have their downsides. They're especially useful for coordinating or managing multiple asynchronous operations, propagating errors from nested or deeply nested async operations, and dynamically chaining asynchronous operations, ie those where you would do something asynchronous, examine output, and then do other asynchronous things based on the intermediate value. Errors and error stacks in promises can be a challenge, because they can behave unintuitively in the way they print errors when they're thrown.They brought new changes to the javascript engine, and paved the way for later innovations like `async/await.`
 
-Promises are great for:
+This latest async pattern is essentially syntactical sugar on promises, but it allows for far more intuitive reading of asynchronous code. They also improve error handling compared to traditional promises, and can be handled with simple `try-catch` blocks. It's so easy to use `async/await` for asynchronous operations that one of its slight dangers is that you'll forget you're dealing with asynchronous code at all.
 
-- Monitoring synchronous operations
-- That need to notify only once (usually completion or error)
-- Coordinating or managing multiple asynchronous operations such as sequencing or branching async operations or managing multiple operations in flight at the same time
-- Propagating errors from nested or deeply nested async operations
-- Getting code ready for the use of async/await (or using it now with a transpiler)
-- Operations that fit the Promise model where there are only three states: pending, fulfilled and rejected and where the state transitions from pending => fulfilled or from pending => rejected can then not change (a single one-way transition).
-- Dynamically linking or chaining asynchronous operations (such as do these two async operations, examine the result, then decide which other async operations to do based on the intermediate result)
-- Managing a mix of asynchronous and synchronous operations
-- Automatically catching and propagating upwards any exceptions that occur in async completion callbacks (in plain callbacks these exceptions are sometimes silently hidden).
-
-# Wrapping Up
-
-## What's the Takeaway?
+Ultimately, the best tool to use is the one for the job you're doing, but now I hope you'll have a firmer grasp on what exactly makes each of these tools a best fit for certain jobs, and be able to use them with a deeper understanding of what's going on at a granular level.
 
 Thank you!
