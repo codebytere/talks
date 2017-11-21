@@ -64,124 +64,37 @@ So, in looking at the diagram, you'll see that the current task can come off eit
 
 ## Slide 11
 
-What happens if something dies or goes wrong in a promise? How do we deal with those errors? The standard way to handle errors from promises is to add a `catch()` handler at the end of your promise chain. You can also chain these handlers, so that you can throw errors into higher-level scopes. Catching and re-throwing errors in this way will tell you which higher-level module lead to the error which means that you can later debug the issue on a top-down or layer-by-layer basis.
+What happens if something goes wrong in a promise? How do we deal with those errors? By default, it turns out, promises are silently swallowed if unhandled. More specifically, any exception which is thrown within a `then` handler, or within the function passed to new `Promise`, will be silently disposed of unless manually handled.
 
+The standard way to handle errors from promises is to add a `catch()` handler at the end of your promise chain. You can also chain these handlers, so that you can throw errors into higher-level scopes. Catching and re-throwing errors in this way will tell you which higher-level module lead to the error which means that you can later debug the issue on a top-down or layer-by-layer basis.
 
-If exceptions are thrown inside the callbacks of `then()` and `catch()` then that’s not a problem, because these two methods convert them to rejections.
+If exceptions are thrown inside the callbacks of `then()` and `catch()` then that’s not a problem, because these two methods convert them to rejections. Let's look at an example and talk about what would work and what wouldn't in more concrete terms.
 
-However, things are different if you start your async function by doing something synchronous:
-
-```js
-function asyncFunction() {
-  somethingSync()
-  return somethingAsync()
-  .then(result => {
-    // do some stuff
-  })
-}
-```
-If an exception is thrown in line A then the whole function throws an exception. There are two solutions to this problem.
-
-Solution 1: returning a rejected Promise
-You can catch exceptions and return them as rejected Promises:
-
-```js
-function asyncFunction() {
-  try {
-    somethingSync()
-    return somethingAsync()
-    .then(result => {
-      // do some stuff
-    })
-  } catch (err) {
-    return Promise.reject(err)
-  }
-}
-```
-
-Solution 2: executing the sync code inside a callback
-You can also start a chain of then() method calls via Promise.resolve() and execute the synchronous code inside a callback:
-
-```js
-function asyncFunction() {
-  return Promise.resolve()
-  .then(() => {
-    somethingSync()
-    return somethingAsync()
-  })
-  .then(result => {
-    // do some stuff
-  })
-}
-```
-
-An alternative is to start the Promise chain via the Promise constructor:
-
-```js
-function asyncFunction() {
-  return new Promise((resolve, reject) => {
-    somethingSync()
-    resolve(somethingAsync())
-  })
-  .then(result => {
-    // do some stuff
-  })
-}
-```
-
-This approach saves you a tick (the synchronous code is executed right away), but it makes your code less regular.
+This is a simple promise example, and from looking at it you can see that `prom` is going to reject with an error no matter what. So, what happens in the first example vs. the second? The first has a `catch`, so it's going to print error, followed by the error message, which in this case is 'rejected!'. You can also see the associated call stack by printing error.stack. The second one doesn't have a catch, so even though it threw an error it'll silently fail.
 
 ## Slide 12
 
-The first thing to observe as we talk about generators is how they differ from normal functions with respect to the "run to completion" expectation. With ES6 generators, we have a different kind of function, which may be paused in the middle, one or many times, and resumed later, allowing other code to run during these paused periods.
+The first thing to observe as we talk about generators is how they differ from normal functions. Thre are several notable differences, but key to generators is their behavior with respect to the "run to completion" expectation. With ES6 generators, we have a different kind of function, which can be paused in the middle either one or several times. It resumed later, so that other code to run during these paused periods bewteen runs.
 
-The main strength of generators is that they provide a single-threaded, synchronous-looking code style, while allowing you to hide the asynchronicity away as an implementation detail. This lets us express in a very natural way what the flow of our program's steps/statements is without simultaneously having to navigate asynchronous syntax and gotchas.
+The main strength of generators is that they provide a single-threaded, synchronous-looking code style, while allowing you to hide the asynchronicity away as an implementation detail. This lets us express in a naturally what our program's step and statement flow is, without having to navigate asynchronous syntax and gotchas at the same time. To get a better idea of how this looks in practice, let's see a function.
 
 ## Slide 13
 
-The `yield index++` expression will send the `index` value out when pausing the generator function at that point, and whenever (if ever) the generator is restarted, whatever value is sent in will be the result of that expression, which will then get added to 1 and assigned to the `index` variable.
+Here, you'll see immediately that there's a little star next to the function in the signature; this is the syntactical indicator that you're looking at the generator function. The keyword `yield` will send out a value whenever the function is run. So, here, The `yield index++` expression will send the `index` value out when pausing the generator function at that point. Whenever (if ever) the generator is restarted, whatever value is sent in will be the result of that expression, which will then get added to 1 and assigned to the `index` variable. When we start, index is zero, so this will be yielded and then 1 will be added to index as a result of the `++`. This will occur each time as the value of `index` is passed out and then in again, so that it increments by 1 every time. To see this a little more clearly, we can look at a diagrammatical representation.
 
 ## Slide 14
 
-DIAGRAM
+On the left, you'll see a traditional non-generator function: it adheres to the run-to completion behavior we expect from functions, with no interruptions from beginning to end. On the right is the generator function, with multiple stops a starts between beginning and end.
+
+It's important to note that there is really no official 'end' per se in a generator function; the end in this case would just be the last time that yield is called. When the generator function is initialized, an iterator is returned, and then the generator starts with the first `next()` call on the function. The function pauses when `yield` is called, and then would restart with the next call to `next()`, and so on an so on.
+
+To recap, with normal functions, you get parameters at the beginning and a return value at the end. With generator functions, you send messages out with each `yield`, and you send messages back in with each restart.
+
+So, what does this look like from a stack perspective?
 
 ## Slide 15
 
-```js
-function* countDown(maxValue) {
-  yield max
-  yield* countDown(max > 0 ? max - 1 : 0)
-}
-
-let counter = countDown(26)
-counter.next().value // 26
-counter.next().value // 25
-```
-
-rewritten in callback form:
-
-```js
-function downCounter(maxValue) {
-  return {
-    value: maxValue,
-    next: () => {
-      downCounter(maxValue > 0 ? maxValue - 1 : 0)
-    }
-  }
-}
-
-let counter = downCounter(26)
-counter.value // 26
-counter.next().value // 25
-```
-
-// TODO CLEAN THIS UP
-
-While in my example, `counter.next().value` will always evaluate to 25 no matter where it occurs and how often we repeat it, this is not the case with the JS generator – at one point it is 26, then 25, and it could really be any number.
-
-ES6 generator functions are "cooperative" in their concurrency behavior. Inside the generator function body, you use the new `yield` keyword to pause the function from inside itself. Nothing can pause a generator from the outside it pauses itself when it comes across a `yield`.
-
-With normal functions, you get parameters at the beginning and a return value at the end. With generator functions, you send messages out with each `yield`, and you send messages back in with each restart.
+ CALL STACK PERSPECTIVE
 
 ## Slide 16
 
@@ -189,32 +102,14 @@ One of the most powerful parts of the ES6 generators design is that the semantic
 
 That's a fancy/complicated way of saying that you can use simple error handling techniques that you're probably very familiar with -- the `try...catch` mechanism.
 
-```js
-function *foo() {
-  try {
-    const x = yield 3
-    console.log(`x: ${x}`)
-  }
-  catch (err) {
-    console.log(`Error: ${err}`)
-  }
-}
-```
-
 Even though the function will pause at the yield 3 expression, and may remain paused an arbitrary amount of time, if an error gets sent back to the generator, that try..catch will catch it! With normal async capabilities like callbacks, that's essentially impossible to do.
-
-```js
-const it = foo()
-const res = it.next()
-it.throw("ERROR!")
-```
 
 Generators have synchronous execution semantics, which means you can use the try..catch error handling mechanism across a yield statement. The generator iterator also has a throw(..) method to throw an error into the generator at its paused position, which can of course also be caught by a try..catch inside the generator.
 
 
 ## Slide 17
 
-Async/await is a new way to write asynchronous code. Previous options for asynchronous code are callbacks and promises. Async/await is actually built on top of promises. It cannot be used with plain callbacks or node callbacks. Async/await is, like promises, non-blocking, and it makes asynchronous code look and behave a little more like synchronous code. This is where all its power lies. Any async function returns a promise implicitly, and the resolve value of the promise will be whatever you return from the function.
+Async/await is a new way to write asynchronous code. Previous options for asynchronous code are callbacks and promises. Async/await was created to simplify the process of working with and writing chained promises, and so `async/await` functions return promises. They cannot be used with plain callbacks or node callbacks. Async/await is thus, like promises, non-blocking, and it makes asynchronous code look and behave a little more like synchronous code. This is where all its power lies. Since any `async/await` function returns a promise implicitly, and the resolve value of the promise will be whatever you return from the function. To illustrate, let's look at some code.
 
 ```js
 async function getABC() {
@@ -226,52 +121,21 @@ async function getABC() {
 }
 ```
 
-### Errors
+## Slide 18
 
-If you’re familiar with promises you know that if a promise is rejected you’ll need to handle that error inside a `.catch`, and if you’re handling errors for both synchronous and asynchronous code you will likely have to duplicate your error handler.
+If you’re familiar with promises you know that if a promise is rejected you’ll need to handle that error inside a `.catch()`, and if you’re handling errors for both synchronous and asynchronous code you will likely have to duplicate your error handler.
 
-```js
-const asyncFunction = () => {
-  try {
-   doSynchronousThings()
-   return getUsers()
-    .then(users => users.map(user => user.getAddress()))
-    .catch(e => console.error(e))
-  } catch(err) {
-    console.error(err)
-  }
-}
-```
+In the above snippet we can see that there is duplicate code on lines 6 and 8. The catch statement on line 7 will handle any errors that the synchronous function `doSynchronousThings` may throw but it won’t handle any errors thrown by getUsers since it is asynchronous. This example may seem palatable since all its doing is printing the error to the console, but if there is any kind of complex error handling logic we want to avoid duplicating it. `async/await` lets us do exactly that:
 
-In the above snippet we can see that there is duplicate code on lines 6 and 8. The catch statement on line 7 will handle any errors that the synchronous function `doSynchronousThings` may throw but it won’t handle any errors thrown by getUsers since it is asynchronous. This example may seem palatable since all its doing is printing the error to the console, but if there is any kind of complex error handling logic we want to avoid duplicating it. Async / await lets us do exactly that:
+Here, we can both minimize the total amount of code we use and catch errors in a more readable and clear way.
 
+## Slide 19
 
-```js
-const asyncFunction = async () => {
-  try {
-   doSynchronousThings()
-   const users = await getUsers()
-   return users.map(user => user.getAddress())
-  } catch(err){
-    console.error(err)
-  }
-}
-```
+Imagine a piece of code that calls multiple promises in a chain, and somewhere down the chain an error is thrown. The error stack returned from a promise chain gives no clue of where the error happened.
 
-One of the goals of async/await is to make asynchronous code appear more syntactically similar to synchronous code. This is also true for error handling.
+Looking at the code here, you'll see two similar constructions, one with promises and one with `async/await`. The one on the left shows this error stack, where we see a huge chain of then's in a somewhat confusing error. On the right side, the async/await construction gives us this comparatively simpler error, telling is what line the error came from without the huge `then` chain.
 
-```js
-const asyncFunction = async () => {
-  try {
-    const data = JSON.parse(await getJSON())
-    console.log(data)
-  } catch (err) {
-    console.log(`Eek! an error: ${err}`)
-  }
-}
-```
-
-Async/await makes it finally possible to handle both synchronous and asynchronous errors with the same construct, good old `try...catch`. In the example below with promises, the try/catch will not handle if `JSON.parse` fails because it’s happening inside a promise. We need to call .catch on the promise and duplicate our error handling code, which will (hopefully) be more sophisticated than console.log in your production ready code.
+The promise error stack also somewhat misleading, in that the only function name it contains is `doSomething()` which doesn't really help in determining which call of that function caused the error. Conversely, the error stack from `async/await` points to the function that contains the error. When you’re trying to use error logs coming from some server to debug code, this is invaluable. In such cases, knowing the error happened in a specific call of `someFunction()` is significantly better than knowing that the error came from somewhere in a long line of `.then`'s.
 
 # Comparing Async Approaches
 
@@ -294,12 +158,6 @@ Promises are great for:
 - Dynamically linking or chaining asynchronous operations (such as do these two async operations, examine the result, then decide which other async operations to do based on the intermediate result)
 - Managing a mix of asynchronous and synchronous operations
 - Automatically catching and propagating upwards any exceptions that occur in async completion callbacks (in plain callbacks these exceptions are sometimes silently hidden).
-
-### Use Cases
-
-## Is There a Best?
-
-### Why/Why Not?
 
 # Wrapping Up
 
