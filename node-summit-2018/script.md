@@ -1,6 +1,6 @@
 ### Slide 1: What is Electron?
 
-Before I really dive into this talk, i'd like to do a brief overview of the Electron project. At the highest level, it's a javascript framework that first sprang into existence about five years ago in 2015. Its impact lay in its capability to, for the first time, allow developers to use web technology, like JS, CSS, and HTML, instead of system languages like **Objective-C** and **C++**, to write applications for desktop platforms.
+Before I really dive into this talk, I'd like to do a brief overview of the Electron project. At the highest level, it's a javascript framework that first sprang into existence about five years ago, in 2013. Its impact lay in its capability to, for the first time, allow developers to use web technology, like JS, CSS, and HTML, instead of system languages like **Objective-C** and **C++**, to write applications for desktop platforms.
 
 It embeds front and back-end components originally developed from web applications: **Chromium** and **Node.js**.
 
@@ -19,11 +19,7 @@ Now, let's dive into the Electron ecosystem and talk about where we've been, whe
 
 ### Slide 6: Community
 
-A year ago, as I joined the team, Electron had a healthy developer community, but the core developer team was small
-
-- couldn't engage with the community as well as we necessarily wanted
--
-- mention that not all of our contributors push code (translators and others)
+A year ago, as I joined the team, Electron had a healthy developer community, but the core developer team was small and so most of our focus was internal. As a result, we were able to engage with the community, but not as well as we necessarily wanted. As the ecosystem and usage have grown, and our core team has grown as well, we've been able to address some of these deficiencies. Our communications channels allow us to better hear the needs of developers in addition to the issue tracker, and we've also been able to better work with some of our other contributors. We know that not all of our community members and contributors add value by pushing code, and so we're glad that we're able to better recognize them. A primary example of this would be the work that we've done in the past year around internationalization of our documentation and of our website. This effort allows us to make Electron more accessible to developers around the world, and it would absolutely not be possible without the work of humans taking time to translate our documentation.
 
 ### Slide 7: How Do We Work?
 
@@ -31,7 +27,7 @@ The Electron team, while a GitHub project initially, has grown beyond our walls 
 
 ### Slide 8: Upgrades
 
-We vendor several dependencies in Electron, but the two that require continual upgrading and maintenance are Node.js and Chromium. We maintain a fork of Node in our organization, as well as a fork of Chromium we call `libchromiumcontent`. The name is resultant of the fact that we don't actually bundle all of Chromium, rather, we bundle the content layer and then selectively pull in several more pieces as they're needed. In the past year we've seen significant changes around how we approach and handle this maintainance.
+We vendor several dependencies in Electron, but the two that require continual upgrading and maintenance are Node.js and Chromium. We maintain a fork of Node in our organization, as well as a fork of Chromium we call `libchromiumcontent`. The name is resultant of the fact that we don't actually bundle all of Chromium, rather, we bundle the content layer and then selectively pull in several more pieces as they're needed. In the past year we've seen significant changes around how we approach and handle this maintenance.
 
 **Node**
 We're working more closely with Node Core and its community now, which allows us to more easily anticipate changes to Node versions and prepare for how they'll affect our own code. We also maintain 20 or so patches we apply to each successive Node upgrade in our fork, whivch is a number we'd like to reduce. As a result, we're also now working with Node developers to upstream patches to Node core in a way that's extensible and benefits other embedders beyond Electron.
@@ -54,8 +50,26 @@ Our backporting process highlights the line dividing what we can automate and wh
 
 ### Slide 10: Roadmapping
 
+I've talked a bit about how we react to bugs and short term feature requests, but now I'd like to talk a bit about how we plan for the not-so-immediate future. For our team, this happens twice a year, at bi-annual planning summits. Importantly, these do not just involve the small core team, but also members of the community invested in the long term success of Electron and the tools around it. Our last summit was held with about 40 attendees, representing a wide range of products and interests. At these summits we break out into groups to discuss topics of most interest as decided at the beginning of the summit. At summit's end, we organize all of these output items and determine how to move forward in terms of their implementation.
+
 ### Slide 11: How Do We Prioritize?
 
+Given the vast amount of things we're working on at any given moment, how do we decide what the best uses of our time are? How do we choose the items that are best left to the backburner, and which are not?
+
 ### Slide 12: What's Next?
+
+I've talked a lot about where we are now and where we've been, but where do we really want to go in the next year? After that? At present, we've amalgamated the output items from our last summit, which center around four primary categories.
+
+**Governance**
+
+**Transparency**
+
+**Release Process**
+
+**Security**
+
+### Slide 13: Thank you!
+
+What it says on the tin.
 
 
