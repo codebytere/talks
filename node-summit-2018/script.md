@@ -1,38 +1,39 @@
 ### Slide 1: What is Electron?
 
-Before I really dive into this talk, I'd like to do a brief overview of the Electron project. At the highest level, it's a javascript framework that first sprang into existence about five years ago, in 2013. Its impact lay in its capability to, for the first time, allow developers to use web technology, like JS, CSS, and HTML, instead of system languages like **Objective-C** and **C++**, to write applications for desktop platforms.
+Before I really dive into this talk, I'd like to do a brief overview of the Electron project. At the highest level, it's a javascript framework that first sprang into existence about five years ago. Its impact lies in its capability to, for the first time, allow developers to use web technologies, like JS, CSS, and HTML, instead of system languages like **Objective-C** and **C++**, to write applications for desktop platforms.
 
-It embeds front and back-end components originally developed from web applications: **Chromium** and **Node.js**.
+Electron embeds **Chromium** and **Node.js**, which comprise front and back-end components originally developed from web applications.
 
 ### Slide 2: What Can It Do?
 
-These embedded components allow it to do a large range of things. For example, with Node, you have access to all of Node's native modules, so you could interact with the filesystem through the `fs` module. You can also create menus, windows, and communicate between processes. With these capabilities, you can bring features and processes to desktop that were previously confined only to the web.
+These embedded components allow Electron to do a large range of things. For example, Electron has access to all of Node's native modules, so you can interact with the filesystem through the `fs` module. You can also create menus, windows, and communicate between processes. With these capabilities, you can bring features and processes to desktop that were previously confined only to the web.
 
 ### Slide 4: In The Wild
 
-Here you can see a small handful of the more well-known Electron apps, designed to showcase some of its abilities. It enabled cross platform desktop development by lowing the barrier to entry, and also allows developers to build things that weren't previously possible. One example of this would be the P2P space; developers now have access to WebRTC
-such that streaming peer-to-peer content over the internet is simpler than ever before.
+Here you can see a small handful of the more well-known Electron apps, which I've chosen to showcase some of its abilities. It enables cross platform desktop development by lowering the barrier to entry, and also allows developers to build things that weren't previously possible. One example of this is the peer-to-peer space; because of Chromium, developers now have access to WebRTC such that streaming peer-to-peer content over the internet is simpler than ever before.
 
 ### Slide 5: What's Changed?
 
-Now, let's dive into the Electron ecosystem and talk about where we've been, where we find ourselves now, and where we think we're going. To guide this presentation, we're going to center around four primary loci of change: Roadmapping, Upgrades, Community, and Processes. Over the past year, these have been the larger categories where we've seen the most growth and continual definition. These categories are vague on their face, but i'll unpack each in more detail as we proceed.
+Now, let's dive into the Electron ecosystem and talk about where we've been, where we find ourselves now, and where we think we're going. To guide this presentation, we're going to focus on the four primary categories of growth for Electron in the past year: Roadmapping, Upgrades, Community, and Processes.
 
 ### Slide 6: Community
 
-A year ago, as I joined the team, Electron had a healthy developer community, but the core developer team was small and so most of our focus was internal. As a result, we were able to engage with the community, but not as well as we necessarily wanted. As the ecosystem and usage have grown, and our core team has grown as well, we've been able to address some of these deficiencies. Our communications channels allow us to better hear the needs of developers in addition to the issue tracker, and we've also been able to better work with some of our other contributors. We know that not all of our community members and contributors add value by pushing code, and so we're glad that we're able to better recognize them. A primary example of this would be the work that we've done in the past year around internationalization of our documentation and of our website. This effort allows us to make Electron more accessible to developers around the world, and it would absolutely not be possible without the work of humans taking time to translate our documentation.
+When I joined the team a year ago, Electron had a healthy developer community, but the core developer team was small and so most of our focus was internal. As a result, we were not able to engage with the larger community working on GitHub as well as we wanted. As the ecosystem and usage of Electron has grown, our core team has grown as well. This has given us more bandwidth to address the needs of developers and work more closely with external contributors. We know that not all of our community members and contributors add value by pushing code, and so we're glad that we're able to better recognize them. A primary example of this would be the work that we've done in the past year around internationalization of our documentation and of our website. This effort allows us to make Electron more accessible to developers around the world, and it would absolutely not be possible without the work of humans taking time to translate our documentation.
 
 ### Slide 7: How Do We Work?
 
-The Electron team, while a GitHub project initially, has grown beyond our walls and now has a core team comprised of folks from a variety of companies. A small number of companies including Slack, Microsoft, and Atlassian employ folks to work directly on Electron, spread out across timezones and countries. As in any distributed large-scale open source project, meetings are hard, but we work to accommodate everyone's needs with multiple meetings as we maintain what is functionally a 24-hour development cycle.
+While a GitHub project initially, Electron has grown beyond its walls and now has a core team comprised of folks from a variety of companies. A small number of companies including Slack, Microsoft, and Atlassian employ folks to work directly on Electron, spread out across timezones and countries. As in any distributed large-scale open source project, meetings are hard, but we work to accommodate everyone's needs with multiple meetings as we maintain what is functionally a 24-hour development cycle.
 
 ### Slide 8: Upgrades
 
-We vendor several dependencies in Electron, but the two that require continual upgrading and maintenance are Node.js and Chromium. We maintain a fork of Node in our organization, as well as a fork of Chromium we call `libchromiumcontent`. The name is resultant of the fact that we don't actually bundle all of Chromium, rather, we bundle the content layer and then selectively pull in several more pieces as they're needed. In the past year we've seen significant changes around how we approach and handle this maintenance.
+We vendor several dependencies in Electron, but the two that require continual upgrading and maintenance are Node.js and Chromium. We maintain a fork of Node in our organization, as well as a fork of Chromium we call `libchromiumcontent`. The name `libchromiumcontent` is resultant of the fact that we don't actually bundle all of Chromium, rather, we bundle the content layer and then selectively pull in several more pieces as they're needed. In the past year we've seen significant changes around how we approach and handle maintenance of both of these.
 
-**Node**
-We're working more closely with Node Core and its community now, which allows us to more easily anticipate changes to Node versions and prepare for how they'll affect our own code. We also maintain 20 or so patches we apply to each successive Node upgrade in our fork, whivch is a number we'd like to reduce. As a result, we're also now working with Node developers to upstream patches to Node core in a way that's extensible and benefits other embedders beyond Electron.
+**Node:**
 
-**Chromium**
+We're working more closely with Node Core and its community now, which allows us to more easily anticipate changes to Node versions and prepare for how they'll affect our own code. We also maintain 20 or so patches we apply to each successive Node upgrade in our fork, which is a number we'd like to reduce. As a result, we're also now working with Node developers to upstream patches to Node core in a way that's extensible and benefits other embedders beyond Electron.
+
+**Chromium:**
+
 When I started, we were consistently 8-9 versions behind Chromium's current stable, and while we haven't reached our goal yet, we've gotten progressively closer as time has passed. At present, we have Chromium 66 in `master` currently while and stable is 67 and an upgrade is in progress. So, what changed? Primarily, we got more efficient at upgrading, and now have more resources and talented engineers who devote their time to the process. It's also important to discuss here _why_ we care significantly about catching up to Chromium. If we can track stable more closely, we can better communicate with the Chromium team and better prepare for breaking changes and deprecations of APIs that we're using in our own code. In this way, upgrading functions as a positive feedback loop, where the the closer we get the easier it becomes.
 
 ### Slide 9: Processes
@@ -54,19 +55,23 @@ I've talked a bit about how we react to bugs and short term feature requests, bu
 
 ### Slide 11: How Do We Prioritize?
 
-Given the vast amount of things we're working on at any given moment, how do we decide what the best uses of our time are? How do we choose the items that are best left to the backburner, and which are not?
+Given the vast amount of things we're working on at any given moment, how do we decide what the best uses of our time are? How do we choose the items that are best left to the backburner, and which are not? It's probably most accurate to say that at a given time we each have a set of individual priorities and a set of group priorities. These individual group priorities might be a small feature or persnickety bug someone's been trying to fix for ages, and a group priority would be a task towards a larger overarching group goal like a blocker for the next beta version.
 
 ### Slide 12: What's Next?
 
 I've talked a lot about where we are now and where we've been, but where do we really want to go in the next year? After that? At present, we've amalgamated the output items from our last summit, which center around four primary categories.
 
 **Governance**
+As we've grown over the past year, we've started to recognize the need for a more clearly delineated governance system then we've had for the past several years. That's not to say that what we've had has proven itself to be insufficient, rather, that we want to set ourselves up for the greatest level of success as we see ourselves on a trajectory where it may be. We believe this change will allow for newer developers to start contributing to the community and understand its processes as well as the ways in which they can make their opinions heard and know whom to talk to about a given topic or initiative.
 
 **Transparency**
+We're an open source project, which by nature means that all of our source code is public and all its history viewable and searchable. However, that's not the end of the story. We have project boards that aren't always viewable or discoverable, as well as meetings and meeting notes that are accessible but which developers looking to gain better insight may not know about or be able to find. To address these gaps, we're working to decide how to make our activities more available. It's also difficult to know what provides the most value to the community, so to gain a better understanding of that we're soliciting feedback from our ecosystem. In the near future, you'll see a more complete picture of our progress and how it's continually refined.
 
 **Release Process**
+We made some significant updates to our release process in the past year, namely switching to semantic versioning and organizing releases around upgrades so that major version bumps correspond to Chromium version upgrades. This makes for a faster release cadence, but we still feel we have a lot to iterate on and improve. We introduced beta versions recently, and in the near future you'll be able to  expect a more predictable timeline for the beta cycle and stable release versions.
 
 **Security**
+Security is something that is broached a lot by core developers and users of the framework, and is something we're both cognizant of and actively working to improve proactively rather than reactively. We're moving towards a more secure by default model, which will entail changes to the `<webview>` tag, url handling, navigation, web contents, and permission handling.
 
 ### Slide 13: Thank you!
 
