@@ -46,7 +46,7 @@ Previously, we had several release line branches we cut from but it wasn't very 
 
 **Issue Triage and Tracking:**
 
-We still use our issue tracker to see what the primary issues are that users experience for each new version and what new features they would like to see in future versions. However, we found that since we have such a wide range of use cases, it was difficult to discern the impact of certain bugs as blockers on apps in the Electron ecosystem. As a result, we recently we implemented something we think will go a long way towards allowing us to better prioritize and make sure we're best addressing these needs. We're calling this program the App Feedback Program, and it allows for Electron apps to report bugs, blockers, and feature requests to the team. It remains in earlier stages, but at present we would like apps to run for a certain number of user hours during the beta cycle, and then report in with the blocking bugs that they find. We then add these to our project board for stability of each release line, and have a clearer and more actionable idea of what it will take for us to reach stability. This gives us burn-in time of the betas, and a guaranteed number of user-hours tested so that we can decide what can be deemed stable in a more empirical and less anecdotal way.
+We still use our issue tracker to see what the primary issues are that users experience for each new version and what new features they would like to see in future versions. However, we found that since we have such a wide range of use cases, it was difficult to figure out what bugs prevented app developers from upgrading to more recent versions. As a result, we recently implemented something we think will go a long way towards allowing us to better prioritize and address these needs. We're calling this program the App Feedback Program, and it allows for Electron apps to report bugs and major blockers to the team. It's still in early stages, but at present we would like apps to run for a certain number of user hours during the beta cycle, and then report in with the blocking bugs that they find. We then add these to our project board for stability of each release line, and have a clearer and more actionable idea of what it will take for us to reach stability. This gives us burn-in time of the betas, and a guaranteed number of user-hours tested so that we can decide what can be deemed stable in a more empirical and less anecdotal way.
 
 **Backporting:**
 
@@ -62,7 +62,7 @@ Given the vast amount of things we're working on at any given moment, how do we 
 
 ### Slide 121 What's Next?
 
-I've talked a lot about where we are now and where we've been, but where do we really want to go in the next year? After that? At present, we've amalgamated the output items from our last summit, which center around four primary categories.
+I've talked a lot about where we are now and where we've been, but where do we really want to go in the next year? After that? At present, we've grouped the output items from our last summit into four big buckets:
 
 **Governance:**
 
