@@ -6,74 +6,81 @@ Electron embeds **Chromium** and **Node.js**, which comprise front and back-end 
 
 ### Slide 2: What Can It Do?
 
-These embedded components allow Electron to do a large range of things. For example, Electron has access to all of Node's native modules, so you can interact with the filesystem through the `fs` module. You can also create menus, windows, and communicate between processes. With these capabilities, you can bring features and processes to desktop that were previously confined only to the web.
+These embedded components allow Electron to do a large range of things. For example, Electron has access to all of Node's native modules, so you can interact with the filesystem through the `fs` module. You can also create menus, windows, and communicate between different types of processes. With these capabilities, you can bring features and processes to desktop that were previously confined only to the web.
 
-### Slide 4: In The Wild
+### Slide 3: In The Wild
 
-Here you can see a small handful of the more well-known Electron apps, which I've chosen to showcase some of its abilities. It enables cross platform desktop development by lowering the barrier to entry, and also allows developers to build things that weren't previously possible. One example of this is the peer-to-peer space; because of Chromium, developers now have access to WebRTC such that streaming peer-to-peer content over the internet is simpler than ever before.
+Here you can see a small handful of the more well-known Electron apps, which I've chosen to showcase some of its abilities. Electron enables cross platform desktop development by lowering the barrier to entry, which means that a smaller team with fewer developer hours to spare can access multiple development platforms more cheaply than if they had to build and maintain multiple separate desktop apps. Electron also allows developers to build things that weren't previously possible. One example of this is the peer-to-peer space; because of Chromium, developers now have access to WebRTC, so streaming peer-to-peer content over the internet is simpler than ever before.
 
-### Slide 5: What's Changed?
+### Slide 3: What's Changed?
 
-Now, let's dive into the Electron ecosystem and talk about where we've been, where we find ourselves now, and where we think we're going. To guide this presentation, we're going to focus on the four primary categories of growth for Electron in the past year: Roadmapping, Upgrades, Community, and Processes.
+Now, let's dive into the Electron ecosystem and talk about where we've been, where we find ourselves now, and where we think we're going. We'll do this by looking at four ways Electron's changed in the last year: Roadmapping, Upgrades, Community, and Processes.
 
-### Slide 6: Community
+### Slide 5: Community
 
-When I joined the team a year ago, Electron had a healthy developer community, but the core developer team was small and so most of our focus was internal. As a result, we were not able to engage with the larger community working on GitHub as well as we wanted. As the ecosystem and usage of Electron has grown, our core team has grown as well. This has given us more bandwidth to address the needs of developers and work more closely with external contributors. We know that not all of our community members and contributors add value by pushing code, and so we're glad that we're able to better recognize them. A primary example of this would be the work that we've done in the past year around internationalization of our documentation and of our website. This effort allows us to make Electron more accessible to developers around the world, and it would absolutely not be possible without the work of humans taking time to translate our documentation.
+When I joined the team a year ago, Electron had a healthy developer community, but the core developer team was small and so most of our focus was internal. As a result, we were not able to engage with the larger community working on GitHub as well as we wanted. As the ecosystem and usage of Electron has grown, our core team has grown as well. This has given us more bandwidth to address the needs of developers and work more closely with external contributors. We're actively trying to recognize everyone who adds value to Electron, whether they contribute by pushing code or in other ways. One key example of this would be the work that we've done in the past year around i18n of our documentation and website. This effort allows us to make Electron more accessible to developers around the world, and it would absolutely not be possible without the work of humans taking time to translate our documentation. The entirety of the process was crowdsourced, so the community was involved at all
 
-### Slide 7: How Do We Work?
+### Slide 6: How Do We Work?
 
-While a GitHub project initially, Electron has grown beyond its walls and now has a core team comprised of folks from a variety of companies. A small number of companies including Slack, Microsoft, and Atlassian employ folks to work directly on Electron, spread out across timezones and countries. As in any distributed large-scale open source project, meetings are hard, but we work to accommodate everyone's needs with multiple meetings as we maintain what is functionally a 24-hour development cycle.
+While a GitHub project initially, Electron has grown beyond its walls and now has a core team comprised of folks from a variety of companies. A small number of companies including Slack, Microsoft, and Atlassian employ folks to work directly on Electron, spread out across timezones and countries. As in any distributed open source project, meetings are hard, but we work to accommodate everyone's needs with multiple meetings as we maintain what is functionally a 24-hour development cycle.
 
-### Slide 8: Upgrades
+### Slide 7: Upgrades
 
-We vendor several dependencies in Electron, but the two that require continual upgrading and maintenance are Node.js and Chromium. We maintain a fork of Node in our organization, as well as a fork of Chromium we call `libchromiumcontent`. The name `libchromiumcontent` is resultant of the fact that we don't actually bundle all of Chromium, rather, we bundle the content layer and then selectively pull in several more pieces as they're needed. In the past year we've seen significant changes around how we approach and handle maintenance of both of these.
+We vendor a few dependencies in Electron, but the two that require continual upgrading and maintenance are Node.js and Chromium. We maintain a fork of Node in our organization, as well as a fork of Chromium we called `libchromiumcontent`. The name `libchromiumcontent` is such because it's a shared library build of Chromium’s Content module; we selectively pull in a few other aspects of Chromium's source code as well but really only bundle the Content module. In the past year we've seen significant changes around how we approach and handle maintenance of both of these.
 
 **Node:**
 
-We're working more closely with Node Core and its community now, which allows us to more easily anticipate changes to Node versions and prepare for how they'll affect our own code. We also maintain 20 or so patches we apply to each successive Node upgrade in our fork, which is a number we'd like to reduce. As a result, we're also now working with Node developers to upstream patches to Node core in a way that's extensible and benefits other embedders beyond Electron.
+We're working more closely with Node Core and its community now, which allows us to better anticipate changes to Node versions and prepare for how they'll affect our own code. We also maintain 20 or so patches we apply to each successive Node upgrade in our fork, which is a number we'd like to reduce. As a result, we're also now working with Node developers to upstream patches to Node core in a way that's extensible and benefits everyone.
 
 **Chromium:**
 
-When I started, we were consistently 8-9 versions behind Chromium's current stable, and while we haven't reached our goal yet, we've gotten progressively closer as time has passed. At present, we have Chromium 66 in `master` currently while and stable is 67 and an upgrade is in progress. So, what changed? Primarily, we got more efficient at upgrading, and now have more resources and talented engineers who devote their time to the process. It's also important to discuss here _why_ we care significantly about catching up to Chromium. If we can track stable more closely, we can better communicate with the Chromium team and better prepare for breaking changes and deprecations of APIs that we're using in our own code. In this way, upgrading functions as a positive feedback loop, where the the closer we get the easier it becomes.
+When I started, we were consistently 8-9 versions behind Chromium's current stable, and while we haven't reached our goal yet, we've gotten progressively closer as time has passed. Right now Chromium, which releases every six weeks, is at version 67. Electron is in a beta cycle using Chromium 66. So, what changed? Primarily, we got more efficient at upgrading, and now have more resources and talented engineers who devote their time to the process. It's also important to discuss here _why_ we care significantly about catching up to Chromium. If we can track stable more closely, we can better communicate with the Chromium team and better prepare for breaking changes and deprecations of APIs that we're using in our own code. In this way, upgrading functions as a positive feedback loop, where the the closer we get the easier it becomes.
 
-### Slide 9: Processes
+### Slide 8: Processes
 
 Changes here mostly center around defining and implementing processes to be clearer and more maintainable, and to improve the core team's forward velocity as we continue to work towards improving Electron. By processes, here, I primarily want to focus on nontechnical processes, or the steps we've outlined for ourselves in several specific areas to guide out approaches to different problems. The first of these three areas is our approach to
 
-**End of Life**
-Previously, we had several release line branches we cut from but it wasn't very clear to a user to what degree of maintenance each branch was under, and what they could expect moving forward in terms of support for a given branch. We spent time discussing the trade-offs of each particular form of EOL, and eventually landed on a process you can now find in our docs on *electronjs.org*.
+**End of Life:**
 
-**Issue Triage and Tracking**
-We still use our issue tracker to see what the primary issues are that users experience for each new version and what new features they would like to see in future versions. However, we found that since we have such a wide range of use cases, it was difficult to discern the impact of certain bugs as blockers on larger-scale apps in the Electron ecosystem. As a result, we recently we implemented something we think will go a long way towards allowing us to better prioritize and make sure we're best addressing their needs as well as the needs of less widely used apps in the ecosystem. We're calling it the App Feedback Program, and it allows for large-scale Electron apps to report app-specific bugs, blockers, and feature requests to the team. It remains in earlier stages, but at present we would like apps to run for a certain number of user hours during the beta cycle, and then report in with the blocking bugs that they find. We then add these to our project board for stability of each release line, and have a clearer and more actionable idea of what it will take for us to reach stability.
+Previously, we had several release line branches we cut from but it wasn't very clear to a user to what degree of maintenance each branch was under, and what they could expect moving forward in terms of support for a given branch. We spent time discussing the trade-offs of each particular form of EOL, and eventually chose settled on a process whereby the latest three release branches are supported by the Electron team.
 
-**Backporting**
-Our backporting process highlights the line dividing what we can automate and what we can't. During a hackweek a few months ago, several of us drank what was probably way too much coffee and use GitHub apps and Probot to create a bot that responds to events on GitHub. It opens up backport pull requests to specified release line branches when pull requests are merged to `master`. We tag PRs with labels to let the bot know where to backport them, but whitelisted developers can also post a comment to the PR that will manually trigger the process. Recently, GitHub exposed the API endpoint to GitHub apps that allows them to merge PRs by themselves, but after discussion we decided clearly that the approval and merge process should not be automated, as it currently couldn't replicate the careful once-over of a human even if the patches applied cleanly.
+**Issue Triage and Tracking:**
 
-### Slide 10: Roadmapping
+We still use our issue tracker to see what the primary issues are that users experience for each new version and what new features they would like to see in future versions. However, we found that since we have such a wide range of use cases, it was difficult to discern the impact of certain bugs as blockers on apps in the Electron ecosystem. As a result, we recently we implemented something we think will go a long way towards allowing us to better prioritize and make sure we're best addressing these needs. We're calling this program the App Feedback Program, and it allows for Electron apps to report bugs, blockers, and feature requests to the team. It remains in earlier stages, but at present we would like apps to run for a certain number of user hours during the beta cycle, and then report in with the blocking bugs that they find. We then add these to our project board for stability of each release line, and have a clearer and more actionable idea of what it will take for us to reach stability. This gives us burn-in time of the betas, and a guaranteed number of user-hours tested so that we can decide what can be deemed stable in a more empirical and less anecdotal way.
+
+**Backporting:**
+
+Our backporting process highlights the line dividing what can be automated away and what can't. During a hackweek a few months ago, several of us drank what was probably way too much coffee and use GitHub apps and Probot to create a bot that responds to events on GitHub. It functions by opening up backport pull requests to specified release line branches when pull requests are merged to `master`. We tag PRs with labels to let the bot know where to backport them, but whitelisted developers can also post a comment to the PR that will manually trigger the process. Recently, GitHub exposed the API endpoint to GitHub apps that allows them to merge PRs by themselves, but after discussion we decided clearly that the approval and merge process should not be automated, as it currently couldn't replicate the careful once-over of a human even if the patches applied cleanly.
+
+### Slide 9: Roadmapping
 
 I've talked a bit about how we react to bugs and short term feature requests, but now I'd like to talk a bit about how we plan for the not-so-immediate future. For our team, this happens twice a year, at bi-annual planning summits. Importantly, these do not just involve the small core team, but also members of the community invested in the long term success of Electron and the tools around it. Our last summit was held with about 40 attendees, representing a wide range of products and interests. At these summits we break out into groups to discuss topics of most interest as decided at the beginning of the summit. At summit's end, we organize all of these output items and determine how to move forward in terms of their implementation.
 
-### Slide 11: How Do We Prioritize?
+### Slide 10: How Do We Prioritize?
 
-Given the vast amount of things we're working on at any given moment, how do we decide what the best uses of our time are? How do we choose the items that are best left to the backburner, and which are not? It's probably most accurate to say that at a given time we each have a set of individual priorities and a set of group priorities. These individual group priorities might be a small feature or persnickety bug someone's been trying to fix for ages, and a group priority would be a task towards a larger overarching group goal like a blocker for the next beta version.
+Given the vast amount of things we're working on at any given moment, how do we decide what the best uses of our time are? How do we choose the items that are best left to the backburner, and which are not? It's probably most accurate to say that at a given time we each have a set of individual priorities and a set of group priorities. These individual priorities might be a small feature or persnickety bug someone's been trying to fix for ages, and a group priority would be a task towards a larger overarching group goal like a blocker for the next beta version.
 
-### Slide 12: What's Next?
+### Slide 121 What's Next?
 
 I've talked a lot about where we are now and where we've been, but where do we really want to go in the next year? After that? At present, we've amalgamated the output items from our last summit, which center around four primary categories.
 
-**Governance**
+**Governance:**
+
 As we've grown over the past year, we've started to recognize the need for a more clearly delineated governance system then we've had for the past several years. That's not to say that what we've had has proven itself to be insufficient, rather, that we want to set ourselves up for the greatest level of success as we see ourselves on a trajectory where it may be. We believe this change will allow for newer developers to start contributing to the community and understand its processes as well as the ways in which they can make their opinions heard and know whom to talk to about a given topic or initiative.
 
-**Transparency**
+**Transparency:**
+
 We're an open source project, which by nature means that all of our source code is public and all its history viewable and searchable. However, that's not the end of the story. We have project boards that aren't always viewable or discoverable, as well as meetings and meeting notes that are accessible but which developers looking to gain better insight may not know about or be able to find. To address these gaps, we're working to decide how to make our activities more available. It's also difficult to know what provides the most value to the community, so to gain a better understanding of that we're soliciting feedback from our ecosystem. In the near future, you'll see a more complete picture of our progress and how it's continually refined.
 
-**Release Process**
-We made some significant updates to our release process in the past year, namely switching to semantic versioning and organizing releases around upgrades so that major version bumps correspond to Chromium version upgrades. This makes for a faster release cadence, but we still feel we have a lot to iterate on and improve. We introduced beta versions recently, and in the near future you'll be able to  expect a more predictable timeline for the beta cycle and stable release versions.
+**Release Process:**
 
-**Security**
-Security is something that is broached a lot by core developers and users of the framework, and is something we're both cognizant of and actively working to improve proactively rather than reactively. We're moving towards a more secure by default model, which will entail changes to the `<webview>` tag, url handling, navigation, web contents, and permission handling.
+We made some significant updates to our release process in the past year, namely switching to semantic versioning starting with 2.0.0 and organizing releases around upgrades so that major version bumps correspond to Chromium version upgrades. This makes for a faster release cadence, but we still feel we have a lot to iterate on and improve. We introduced beta versions recently, and in the near future you'll be able to expect a more predictable timeline for the beta cycle and stable release versions. We're also moving to nightly builds
 
-### Slide 13: Thank you!
+**Security:**
+
+Security is something that is broached a lot by core developers and users of the framework, and is something we're aware of and working to improve proactively rather than reactively. We're moving towards a more secure by default model, which will entail changes to the `<webview>` tag, url handling, navigation, web contents, and permission handling.
+
+### Slide 12: Thank you!
 
 What it says on the tin.
 
