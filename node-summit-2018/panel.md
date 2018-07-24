@@ -29,25 +29,30 @@ We will have 35 minutes to talk about anything related to Electron, and the conv
 ### Panel Questions
 
 Note: The names beside the questions are just so I can make sure everyone gets to speak about their expertise, please feel free to chime in even if your names are not there.
-Intro & Warm up (5 mins)
+
+#### Intro & Warm up (5 mins)
 
 **[everyone]** Would each of you tell us your experience or involvement with Electron?
-Current limitations & how to work with them (15 mins)
-[Cassidy & Jackie] Panelists that have been involved in applications built with Electron, what other framework options did you consider, and how did you end up deciding that Electron was the right tool for the project? What were some of the trade-offs of using Electron?
+
+#### Current limitations & how to work with them (15 mins)
+
+**[Cassidy & Jackie]** Panelists that have been involved in applications built with Electron, what other framework options did you consider, and how did you end up deciding that Electron was the right tool for the project? What were some of the trade-offs of using Electron?
 
 **[everyone]** Electron, like all other tools, is not without flaws. Some of the most common criticisms Electron gets is that it’s not very performant, especially when it comes to memory usage. What do y’all think of that? Is that a fair criticism?
 
-[everyone, but maybe Cassidy & Jackie will have real-life examples / tips & tricks from working on electron apps?] On a more practical level, what are some factors developers can control to make their Electron apps more performant?
+**[everyone, but maybe Cassidy & Jackie will have real-life examples / tips & tricks from working on electron apps?]** On a more practical level, what are some factors developers can control to make their Electron apps more performant?
 
-[Nitish & Shelley] Are there any early architectural decisions in Electron that you'd have changed if you could?
-Community (5 min)
-[Shelley & Nitish]
-Who IS Electron? What are the driving forces behind it?
-Electron is built on top of Chromium and Node; how does the electron community intertwine with Node and Chromium communities?
-Future & Long Term Vision (10 mins)
-About a month ago, the Electron project just had a mini-summit where the collaborators got together and discussed the future of Electron. But before we talk about the exciting roadmap, I want to first ask the two people that were not at the Electron summit, so [Cassidy & Jackie]: imagine a world where Electron is perfect and exactly what you'd wanted it to be, what cool features does this dreamy Electron have that current real life Electron doesn't? Feel free to go wild on this one.
+**[Nitish & Shelley]** Are there any early architectural decisions in Electron that you'd have changed if you could?
 
-[Shelley & Nitish] What does the Electron roadmap actually look like? What are something about the future of Electron you are excited about?
+#### Community (5 min)
 
-[everyone] (if “shared runtime” has not already been touched on) now that Electron apps are getting more and more popular, it’s quite common to have multiple Electron apps open at the same time. A lot of people are wondering if it’s possible to reduce resource footprint of these apps by having all these apps all share a runtime. Can you talk a little bit about the concept of “shared runtime” and if that’s possible in foreseeable future? Why or why not?
+**[Shelley & Nitish]** Who IS Electron? What are the driving forces behind it? Electron is built on top of Chromium and Node; how does the electron community intertwine with Node and Chromium communities?
+
+#### Future & Long Term Vision (10 mins)
+
+About a month ago, the Electron project just had a mini-summit where the collaborators got together and discussed the future of Electron. But before we talk about the exciting roadmap, I want to first ask the two people that were not at the Electron summit, so **[Cassidy & Jackie]**: imagine a world where Electron is perfect and exactly what you'd wanted it to be, what cool features does this dreamy Electron have that current real life Electron doesn't? Feel free to go wild on this one.
+
+**[Shelley & Nitish]** What does the Electron roadmap actually look like? What are something about the future of Electron you are excited about?
+
+**[everyone]** (if “shared runtime” has not already been touched on) now that Electron apps are getting more and more popular, it’s quite common to have multiple Electron apps open at the same time. A lot of people are wondering if it’s possible to reduce resource footprint of these apps by having all these apps all share a runtime. Can you talk a little bit about the concept of “shared runtime” and if that’s possible in foreseeable future? Why or why not?
 
