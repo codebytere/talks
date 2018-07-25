@@ -73,6 +73,8 @@ I've talked a bit about how we react to bugs and short term feature requests, bu
 
 Given the vast amount of things we're working on at any given moment, how do we decide what the best uses of our time are? How do we choose the items that are best left to the backburner, and which are not? It's probably most accurate to say that at a given time we each have a set of individual priorities and a set of group priorities. These individual priorities might be a small feature or persnickety bug someone's been trying to fix for ages, and a group priority would be a task towards a larger overarching group goal like a blocker for the next beta version.
 
+Recent changes to our issue reporting and organization have also made it easier to see what tasks need to be done. For each version, including current beta cycles, we have project boards organized in columns so that we can see what blocks versions and presents big challenges to developers, as well as where those issues are in the pipeline from unassigned to taken by someone and fixed in a patch release. This has allowed us to more efficiently divide and conquer so that users see their issues fixed more predictably and can track progress.
+
 ### Slide 11: What's Next? [20M:07S]
 
 I've talked a lot about where we are now and where we've been, but where do we really want to go in the next year? After that? At present, we've grouped the output items from our last summit into four big buckets: Governance, Transparency, Release Process, and Security. We'll start with Governance, which I mentioned briefly earlier and can now dive more deeply into.
