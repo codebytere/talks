@@ -1,4 +1,4 @@
-### Slide 1: What is Electron? [38S]
+### Slide 1: What is Electron? [0M:38S]
 
 Before I really dive into this talk, I'd like to do a brief overview of Electron. At the highest level, it's a javascript framework that first sprang into existence about five years ago. Its impact lies in its capability to, for the first time, allow developers to write applications for desktop platforms using web technologies, like JS, CSS, and HTML, instead of system languages like **Objective-C** and **C++**.
 
@@ -69,30 +69,30 @@ Our backporting process highlights the line dividing what can be automated away 
 
 I've talked a bit about how we react to bugs and short term feature requests, but now I'd like to talk a bit about how we plan for the not-so-immediate future. For our team, this happens twice a year, at bi-annual planning summits. Importantly, these do not just involve the small core team, but also members of the community invested in the long term success of Electron and the tools around it. Our last summit was held with about 40 attendees, representing a wide range of products and interests. At these summits we break out into groups to discuss topics of most interest as decided at the beginning of the summit. At summit's end, we organize all of these output items and distill them into more actionable goals that individuals or small groups can then assume responsibility for and drive to the finish line.
 
-### Slide 10: How Do We Prioritize?
+### Slide 10: How Do We Prioritize? [15M:58S]
 
 Given the vast amount of things we're working on at any given moment, how do we decide what the best uses of our time are? How do we choose the items that are best left to the backburner, and which are not? It's probably most accurate to say that at a given time we each have a set of individual priorities and a set of group priorities. These individual priorities might be a small feature or persnickety bug someone's been trying to fix for ages, and a group priority would be a task towards a larger overarching group goal like a blocker for the next beta version.
 
-### Slide 11: What's Next?
+### Slide 11: What's Next? [20M:07S]
 
-I've talked a lot about where we are now and where we've been, but where do we really want to go in the next year? After that? At present, we've grouped the output items from our last summit into four big buckets:
+I've talked a lot about where we are now and where we've been, but where do we really want to go in the next year? After that? At present, we've grouped the output items from our last summit into four big buckets: Governance, Transparency, Release Process, and Security. We'll start with Governance, which I mentioned briefly earlier and can now dive more deeply into.
 
 **Governance:**
 
-As we've grown over the past year, we've started to recognize the need for a more clearly delineated governance system then we've had for the past several years. That's not to say that what we've had has proven itself to be insufficient, rather, that we want to set ourselves up for the greatest level of success as we see ourselves on a trajectory where it may be. We believe this change will allow for newer developers to start contributing to the community and understand its processes as well as the ways in which they can make their opinions heard and know whom to talk to about a given topic or initiative.
+As we've grown over the past year, we've started to recognize the need for a more clearly delineated governance system then we've had for the past several years. That's not to say that what we've had has proven itself to be insufficient, rather, that we want to set ourselves up for the greatest level of success as we see ourselves on a trajectory where it may become insufficient. We believe this change will allow for newer developers to start contributing to the community and understand its processes as well as the ways in which they can make their opinions heard and know whom to talk to about a given topic or initiative.
 
 **Transparency:**
 
-We're an open source project, which by nature means that all of our source code is public and all its history viewable and searchable. However, that's not the end of the story. We have project boards that aren't always viewable or discoverable, as well as meetings and meeting notes that are accessible but which developers looking to gain better insight may not know about or be able to find. To address these gaps, we're working to decide how to make our activities more available. It's also difficult to know what provides the most value to the community, so to gain a better understanding of that we're soliciting feedback from our ecosystem. In the near future, you'll see a more complete picture of our progress as well as what our short and long-term goals are.
+In terms of transparency, we're an open source project, which by nature means that all of our source code is public and all its history viewable and searchable. However, that's not the end of the story. We have project boards that aren't always viewable or discoverable, as well as meetings and meeting notes that are accessible but which developers looking to gain better insight may not know about or be able to find. To address these gaps, we're working to decide how to make our activities more available. It's also difficult to know what provides the most value to the community, so to gain a better understanding of that we're currently soliciting feedback from our ecosystem. In the near future, you'll see a more complete picture of our progress as well as what our short and long-term goals are.
 
 **Release Process:**
 
-We made some significant updates to our release process in the past year, namely switching to semantic versioning starting with 2.0.0 and organizing releases around upgrades so that major version bumps correspond to Chromium version upgrades. This makes for a faster release cadence, but we still feel we have a lot to iterate on and improve. We introduced beta versions recently, and in the near future you'll be able to expect a more predictable timeline for the beta cycle and stable release versions. We're also moving to nightly builds, which we think will help developers feel more confident in upgrading as they'll these builds immediate feed back to developers for how changes in Electron may have broken their build in more incremental and digestible ways.
+We made some significant updates to our release process in the past year, namely switching to semantic versioning starting with 2.0.0 and organizing releases around upgrades so that major version bumps correspond to Chromium version upgrades. This makes for a faster release cadence, but we still feel we have a lot to iterate on and improve. We introduced beta versions recently, and in the near future you'll be able to expect a more predictable timeline for beta cycle and stable release versions. We're also moving to nightly builds, which we think will help developers feel more confident in upgrading as they'll these builds immediate feed back to developers for how changes in Electron may have broken their build in more incremental and digestible ways.
 
 **Security:**
 
 Security is something that is broached a lot by core developers and users of the framework, and is something we're aware of and working to improve proactively rather than reactively. We're moving towards a more secure by default model, which will entail changes to the `<webview>` tag, url handling, navigation, web contents, and permission handling. We'd also like to improve our story around sandboxing, which we've had for a while but which could always stand to be improved and would help developers feel more confident in the security status of their apps.
 
-### Slide 12: Thank you!
+### Slide 12: Thank you! [20M:20S]
 
 As we continue to grow and improve as a team, we'd love to help if you have questions or are interested in contributing or giving us feedback so please feel free to reach out! Thank you!
