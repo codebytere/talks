@@ -9,3 +9,5 @@
 **[Node Collaborator Summit 2018](https://github.com/nodejs/summit/blob/master/2018-10-Vancouver/agenda.md)** - This talk discusses the requirements and pain points around embedding Node and how we can work to improve that in the future.
 
 **[WaffleJS January 2019](https://wafflejs.com)** - Crossword puzzles might not seem like a pastime you associate with anyone younger than baby boomers, but it turns out that the patterns behind these wonderfully nerdy puzzles are a great lens through which to consider different approaches to software engineering. In this talk, I’ll take you on a journey through some of my favorite clues and puzzles, and how they informed and improved my perspectives as a developer.
+
+**Modern JS /Runtimes/** - This talk describes the process whereby features written in C++ or Objective-C get to JavaScript so they're available to an end-user. It describes how we combined V8, Chromium components, and Node in order to deliver our module APIs.
