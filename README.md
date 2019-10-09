@@ -1,4 +1,6 @@
-## Talks
+<p align="center">
+  <img width="778" src="https://user-images.githubusercontent.com/2036040/66464336-12e11d80-ea7f-11e9-8e7d-1705341a42d2.png", alt="@codebytere's talk repo header">
+</p>
 
 **[JSConfEU 2018](https://2018.jsconf.eu/)** - This talk explores the conceptual underpinnings of asynchronous programming options available to modern javascript developers in 2017, and the drawbacks and advantages to each.
 
